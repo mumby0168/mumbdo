@@ -1,0 +1,17 @@
+
+<MatDrawerContainer>
+    <MatDrawer OpenedChanged="SetOpenChanged" Opened="IsOpen" Mode="MatDrawerMode.Modal">
+    </MatDrawer>
+    <MatDrawerContent>
+        <p>Hello World</p>
+    </MatDrawerContent>
+</MatDrawerContainer>
+
+@code {
+    
+    [Parameter]
+    public bool IsOpen { get; set; }    
+    
+    [Parameter]
+    public Action<bool> SetOpenChanged { get; set; }
+}

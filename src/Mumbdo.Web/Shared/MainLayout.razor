@@ -2,30 +2,57 @@
 
 <style>
     .root {
-        margin-top: 5rem;
+        padding-top: 70px;
+        height: 100%;
+    }
+    .drawer {
+        padding-top: 65px;
     }
 </style>
 
-<div>
-    <MudThemeProvider />
-    <MudDialogProvider />
-    <MudSnackbarProvider />
-    <MudAppBar>
-          <MudIconButton Icon="@Icons.Material.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleOpen" />
-          <MudText Typo="Typo.h6">Mumbdo</MudText>
-    </MudAppBar>
-     <MudDrawer @bind-Open="@Open">
-        <MudDrawerHeader>
-            <MudText Typo="Typo.h6">Mumbdo</MudText>
-        </MudDrawerHeader>
-    </MudDrawer>
-    <MudContainer class="root">
+
+<MudThemeProvider Theme="@Theme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudAppBar>
+    <MudIconButton Icon="@Icons.Material.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleOpen" />
+    <MudText Typo="Typo.h6">Mumbdo</MudText>
+</MudAppBar>
+<MudDrawer class="drawer" @bind-Open="@Open">
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h6">Mumbdo</MudText>
+    </MudDrawerHeader>
+</MudDrawer>
+<MudPaper class="root">
+    <MudContainer>
         @Body
     </MudContainer>
-</div>
+</MudPaper>
 
 @code {
-    bool Open { get; set;}
+    MudTheme Theme = new MudTheme()
+    {
+        Palette = new Palette()
+        {
+            Primary = Colors.Blue.Darken3,
+            Secondary = Colors.LightBlue.Darken3,
+            Black = "#27272f",
+            Background = "#32333d",
+            BackgroundGrey = "#27272f",
+            Surface = "#373740",
+            DrawerBackground = "#27272f",
+            DrawerText = "rgba(255,255,255, 0.50)",
+            DrawerIcon = "rgba(255,255,255, 0.50)",
+            AppbarBackground = Colors.Blue.Darken3,
+            AppbarText = "#fff",
+            TextPrimary = "#fff",
+            ActionDefault = "#adadb1",
+            ActionDisabled = "rgba(255,255,255, 0.26)",
+            ActionDisabledBackground = "rgba(255,255,255, 0.12)"
+        }
+    };
+
+    bool Open { get; set; }
 
     void ToggleOpen() => Open = !Open;
 }

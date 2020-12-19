@@ -1,8 +1,31 @@
 @inherits LayoutComponentBase
 
-<div class="page">
-        <AppBar/>
-        <div class="content px-4">
-            @Body
-        </div>
+<style>
+    .root {
+        margin-top: 5rem;
+    }
+</style>
+
+<div>
+    <MudThemeProvider />
+    <MudDialogProvider />
+    <MudSnackbarProvider />
+    <MudAppBar>
+          <MudIconButton Icon="@Icons.Material.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleOpen" />
+          <MudText Typo="Typo.h6">Mumbdo</MudText>
+    </MudAppBar>
+     <MudDrawer @bind-Open="@Open">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">Mumbdo</MudText>
+        </MudDrawerHeader>
+    </MudDrawer>
+    <MudContainer class="root">
+        @Body
+    </MudContainer>
 </div>
+
+@code {
+    bool Open { get; set;}
+
+    void ToggleOpen() => Open = !Open;
+}

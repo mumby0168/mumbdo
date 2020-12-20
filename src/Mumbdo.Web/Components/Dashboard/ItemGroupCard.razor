@@ -1,0 +1,26 @@
+@code {
+
+    [Parameter]
+    public ItemGroupDto ItemGroup { get; set; }
+
+    int TaskCount => ItemGroup.Tasks?.Count ?? 0;
+}
+
+<MudItem xs="4">
+            <MudCard Elevation="5">
+                <MudCardMedia
+                    Image="@ItemGroup.Image">
+                </MudCardMedia>
+                <MudCardContent>
+                    <MudText Typo="Typo.h5">@ItemGroup.Name</MudText>
+                    <MudText Typo="Typo.body2">@ItemGroup.Description</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Add">Add</MudButton>
+                    <div style="margin-right: 0.5rem"></div>  
+                    <MudBadge Content="@TaskCount" Color="Color.Secondary">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Article">View</MudButton>
+                    </MudBadge>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>

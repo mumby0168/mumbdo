@@ -2,17 +2,21 @@
 
 <style>
     .root {
-        padding-top: 70px;
+        padding-top: 90px;
         height: 100%;
+        overflow-y: auto;
     }
     .drawer {
         padding-top: 65px;
+    }
+    .con {
+        height: 100%;
     }
 </style>
 
 
 <MudThemeProvider Theme="@Theme" />
-<MudDialogProvider />
+<MudDialogProvider FullWidth="true" />
 <MudSnackbarProvider />
 <MudAppBar>
     <MudIconButton Icon="@Icons.Material.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleOpen" />
@@ -24,7 +28,7 @@
     </MudDrawerHeader>
 </MudDrawer>
 <MudPaper class="root">
-    <MudContainer>
+    <MudContainer class="con">
         @Body
     </MudContainer>
 </MudPaper>
@@ -34,8 +38,8 @@
     {
         Palette = new Palette()
         {
-            Primary = Colors.Blue.Darken3,
-            Secondary = Colors.LightBlue.Darken3,
+            Primary = Colors.Blue.Darken2,
+            Secondary = Colors.Orange.Darken3,
             Black = "#27272f",
             Background = "#32333d",
             BackgroundGrey = "#27272f",
@@ -43,7 +47,7 @@
             DrawerBackground = "#27272f",
             DrawerText = "rgba(255,255,255, 0.50)",
             DrawerIcon = "rgba(255,255,255, 0.50)",
-            AppbarBackground = Colors.Blue.Darken3,
+            AppbarBackground = Colors.Blue.Darken2,
             AppbarText = "#fff",
             TextPrimary = "#fff",
             ActionDefault = "#adadb1",

@@ -3,8 +3,11 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using MudBlazor;
 using MudBlazor.Services;
+using Mumbdo.Web.Interfaces.Managers;
+using Mumbdo.Web.Managers;
 
 namespace Mumbdo.Web
 {
@@ -19,6 +22,7 @@ namespace Mumbdo.Web
             builder.Services.AddMudBlazorDialog();
             builder.Services.AddMudBlazorSnackbar();
             builder.Services.AddMudBlazorResizeListener();
+            builder.Services.AddSingleton<ITaskGroupManager, TaskGroupManager>();
 
             await builder.Build().RunAsync();
         }

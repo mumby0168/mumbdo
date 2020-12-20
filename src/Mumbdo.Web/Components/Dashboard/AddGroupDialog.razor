@@ -1,0 +1,68 @@
+
+
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="Form" bind-IsValid="@IsValid">
+            <MudTextField bind-Value="@Name" T="string" Label="Name" Required="true" RequiredError="A name is required."/>
+            <br/>
+            <MudTextField bind-Value="@Description" Label="Description" T="string" Lines="2" />
+            <br/>
+            <MudCard Elevation="3">
+                <MudCardHeader>
+                     <CardHeaderContent>
+                        <MudText Typo="Typo.body1">Cover Image</MudText>
+                     </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardMedia Image="@ImageUri"/>
+            </MudCard>    
+            <MudMenu Icon="@Icons.Material.ImageSearch">
+                <MudCardContent>
+                    <MudTextField T="string" Label="Image URL" OnBlur="OnImageUrlLeft" @bind-Value="@ImageUri" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Image"/>
+                    <MudButton OnClick="@OnImageUrlLeft">Ok</MudButton>
+                </MudCardContent>
+            </MudMenu>
+        </MudForm>
+        <br/>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit">Create</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    string Name;
+
+    string Description;
+
+    bool IsValid;
+
+    MudForm Form;
+
+    string ImageUri { get; set; } = PlaceHolder;
+
+    const string PlaceHolder = "/imgs/supermarket.jpg";
+
+    void OnImageUrlLeft()
+    {
+        Console.WriteLine(ImageUri);
+        Name = "Test";
+        StateHasChanged();
+    }
+
+
+    void Submit()
+    {
+        Form.Validate();
+        if (IsValid)
+        {
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        
+            
+    }
+    void Cancel() => MudDialog.Cancel();
+}

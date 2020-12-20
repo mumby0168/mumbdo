@@ -1,0 +1,32 @@
+@page "/"
+@inject ITaskGroupManager TaskGroupManager;
+@inject IDialogService DialogService
+
+
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudCard Elevation="5">
+            <MudCardContent>
+                <MudButton OnClick="@ShowAddGroupDialog" StartIcon="@Icons.Material.Article" Color="Color.Secondary" Variant="Variant.Filled">Add Group</MudButton>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    @foreach (var group in Groups)
+    {
+        <ItemGroupCard ItemGroup="@group" />
+    }
+</MudGrid>
+
+
+@code {
+        List<ItemGroupDto> Groups { get; set; }
+
+        protected override async Task OnInitializedAsync()
+        {
+            Groups = (await TaskGroupManager.GetAllGroupsAsync()).ToList();
+            await base.OnInitializedAsync();
+        }
+
+        private void ShowAddGroupDialog() => DialogService.Show<AddGroupDialog>("Add Task Group");
+}

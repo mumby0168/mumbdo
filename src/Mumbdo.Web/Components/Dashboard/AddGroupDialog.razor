@@ -1,29 +1,18 @@
+@inject ITaskGroupManager TaskGroupManager
 
 
 
 <MudDialog>
     <DialogContent>
         <MudForm @ref="Form" bind-IsValid="@IsValid">
-            <MudTextField bind-Value="@Name" T="string" Label="Name" Required="true" RequiredError="A name is required."/>
+            <MudTextField @bind-Value="@Name" T="string" Label="Name" Required="true" RequiredError="A name is required."/>
             <br/>
-            <MudTextField bind-Value="@Description" Label="Description" T="string" Lines="2" />
+            <MudTextField @bind-Value="@Description" Label="Description" T="string" Lines="2" />
             <br/>
-            <MudCard Elevation="3">
-                <MudCardHeader>
-                     <CardHeaderContent>
-                        <MudText Typo="Typo.body1">Cover Image</MudText>
-                     </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardMedia Image="@ImageUri"/>
-            </MudCard>    
-            <MudMenu Icon="@Icons.Material.ImageSearch">
-                <MudCardContent>
-                    <MudTextField T="string" Label="Image URL" OnBlur="OnImageUrlLeft" @bind-Value="@ImageUri" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Image"/>
-                    <MudButton OnClick="@OnImageUrlLeft">Ok</MudButton>
-                </MudCardContent>
-            </MudMenu>
         </MudForm>
+        <ImagePicker @bind-ImageUri="@ImageUri"/>
         <br/>
+        <MudText Color="Color.Error">@ErrorText</MudText>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
@@ -34,35 +23,40 @@
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-    string Name;
+    string Name { get; set; }
 
-    string Description;
+    string Description { get; set; }
 
     bool IsValid;
 
+    string ErrorText;
+
     MudForm Form;
 
-    string ImageUri { get; set; } = PlaceHolder;
+    string ImageUri = PlaceHolder;
 
-    const string PlaceHolder = "/imgs/supermarket.jpg";
+    const string PlaceHolder = "https://images.unsplash.com/photo-1500423079914-b65af272b8db?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8MXwxMzQ0NTA3fHxlbnwwfHx8&w=1000&q=80";
 
-    void OnImageUrlLeft()
-    {
-        Console.WriteLine(ImageUri);
-        Name = "Test";
-        StateHasChanged();
-    }
-
-
-    void Submit()
+    async Task Submit()
     {
         Form.Validate();
-        if (IsValid)
+        if (Form.IsValid)
         {
-            MudDialog.Close(DialogResult.Ok(true));
+            Console.WriteLine(Name);
+            Console.WriteLine(Description);
+            var error = await TaskGroupManager.AddGroupAsync(new ItemGroupDto(Guid.NewGuid(), Name, Description, ImageUri));
+            if (error != string.Empty)
+            {
+                ErrorText = error;
+                return;
+            }
+
+            await MudDialog.Close(DialogResult.Ok(true));
         }
-        
-            
+        else
+        {
+            Console.WriteLine("Form Invalid");
+        }
     }
     void Cancel() => MudDialog.Cancel();
 }

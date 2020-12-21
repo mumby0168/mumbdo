@@ -1,0 +1,35 @@
+<MudCard Elevation="8" Outlined="true">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.body1">Cover Image</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <img style="height: 100%; width: 100%;" src="@ImageUri"/>    
+    </MudCardContent>
+    <MudCardActions>
+        <MudMenu Color="Color.Primary" Icon="@Icons.Material.ImageSearch">
+            <MudCardContent Style="width: 400px;">
+                <MudTextField T="string" Label="Image URL" OnBlur="OnImageUrlLeft" @bind-Value="@ImageUri"  Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Image"/>
+            </MudCardContent>
+        </MudMenu>
+    </MudCardActions>
+</MudCard>    
+
+
+@code {
+
+    [Parameter]
+    public string ImageUri { get; set; }
+
+    [Parameter]
+    public EventCallback<string> ImageUriChanged { get; set; }
+
+    void OnImageUrlLeft()
+    {
+        ImageUriChanged.InvokeAsync(ImageUri);
+    }
+
+    private string _imageUri;
+    private string _image;
+}

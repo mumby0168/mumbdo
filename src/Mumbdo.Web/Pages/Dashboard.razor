@@ -20,13 +20,25 @@
 
 
 @code {
-        List<ItemGroupDto> Groups { get; set; }
+    List<ItemGroupDto> Groups { get; set; }
 
-        protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
+    {
+        Groups = (await TaskGroupManager.GetAllGroupsAsync()).ToList();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task ShowAddGroupDialog()
+    {
+        var dialog = DialogService.Show<AddGroupDialog>("Add Task Group");
+
+        var res = await dialog.Result;
+        Console.WriteLine(res.Cancelled);
+        if (!res.Cancelled)
         {
+            Console.WriteLine("Was not cancelled");
             Groups = (await TaskGroupManager.GetAllGroupsAsync()).ToList();
-            await base.OnInitializedAsync();
         }
-
-        private void ShowAddGroupDialog() => DialogService.Show<AddGroupDialog>("Add Task Group");
+    }
+    
 }

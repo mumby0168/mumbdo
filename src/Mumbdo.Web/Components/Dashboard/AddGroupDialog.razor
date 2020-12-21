@@ -2,22 +2,27 @@
 
 
 
-<MudDialog>
+
+
+<MudDialog DisableSidePadding="true">
     <DialogContent>
-        <MudForm @ref="Form" bind-IsValid="@IsValid">
-            <MudTextField @bind-Value="@Name" T="string" Label="Name" Required="true" RequiredError="A name is required."/>
+        <MudContainer Class="add-g-dialog-container">
+            <MudForm @ref="Form" bind-IsValid="@IsValid">
+                <MudTextField @bind-Value="@Name" T="string" Label="Name" Required="true" RequiredError="A name is required."/>
+                <br/>
+                <MudTextField @bind-Value="@Description" Label="Description" T="string" Lines="2"/>
+                <br/>
+            </MudForm>
+            <ImagePicker @bind-ImageUri="@ImageUri"/>
             <br/>
-            <MudTextField @bind-Value="@Description" Label="Description" T="string" Lines="2" />
-            <br/>
-        </MudForm>
-        <ImagePicker @bind-ImageUri="@ImageUri"/>
-        <br/>
-        <MudText Color="Color.Error">@ErrorText</MudText>
+            <MudText Color="Color.Error">@ErrorText</MudText>
+        </MudContainer>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit">Create</MudButton>
     </DialogActions>
+    
 </MudDialog>
 
 @code {

@@ -11,6 +11,22 @@ html, body {
     height: 100%;
 }
 
+.add-g-dialog-container {
+    overflow-y: auto;
+}
+@media only screen and (max-width: 600px) {
+    .add-g-dialog-container {
+        overflow-y: auto;
+        max-height: 400px;
+    }
+}
+@media only screen and (max-height: 850px) {
+    .add-g-dialog-container {
+        overflow-y: auto;
+        max-height: 400px;
+    }
+}
+
 
 .invalid {
     outline: 1px solid red;

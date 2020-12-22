@@ -1,9 +1,13 @@
+@inject NavigationManager NavigationManager
 @code {
 
     [Parameter]
     public ItemGroupDto ItemGroup { get; set; }
 
     int TaskCount => ItemGroup.Tasks?.Count ?? 0;
+
+    void ViewList() 
+        => NavigationManager.NavigateTo($"/group-tasks/{ItemGroup.Id}");
 }
 
 <MudItem xs="12" md="6" lg="4">
@@ -19,7 +23,7 @@
             <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Add">Add</MudButton>
             <div style="margin-right: 0.5rem"></div>  
             <MudBadge Content="@TaskCount" Color="Color.Secondary">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Article">View</MudButton>
+                <MudButton OnClick="@ViewList" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Article">View</MudButton>
             </MudBadge>
         </MudCardActions>
     </MudCard>

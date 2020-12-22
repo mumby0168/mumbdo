@@ -49,7 +49,7 @@
         {
             Console.WriteLine(Name);
             Console.WriteLine(Description);
-            var error = await TaskGroupManager.AddGroupAsync(new ItemGroupDto(Guid.NewGuid(), Name, Description, ImageUri));
+            var error = await TaskGroupManager.AddGroupAsync(new ItemGroupDto(Guid.NewGuid(), Name, Description, ImageUri, new List<TaskDto>()));
             if (error != string.Empty)
             {
                 ErrorText = error;

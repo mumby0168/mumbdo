@@ -1,0 +1,62 @@
+@page "/group-tasks/{id}"
+@inject ITaskGroupManager TaskGroupManager
+
+@code {
+
+    [Parameter]
+    public string Id
+    {
+        get => _id;
+        set
+        {
+            _id = value;
+            GroupId = Guid.Parse(value);
+        }
+    }
+
+    private string _id;
+
+    Guid GroupId;
+    
+    ItemGroupDto Group { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Group = await TaskGroupManager.GetAsync(GroupId);
+        await  base.OnParametersSetAsync();
+    }   
+
+}
+<MudCard Elevation="5">
+    <MudCardMedia Image="@Group.Image"></MudCardMedia>
+    <MudCardContent>
+        <MudText Typo="Typo.h2">@Group.Name</MudText>
+        <MudText Typo="Typo.body1">@Group.Description</MudText>
+    </MudCardContent>
+</MudCard>
+
+<br/>
+
+<MudTable Elevation="5" Dense="true" Items="Group.Tasks" >
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>Created</MudTh>
+        <MudTd>Deadline</MudTd>
+        <MudTh>Actions</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Created">@context.Created.ToShortTimeString()</MudTd>
+        <MudTd DataLabel="Deadline">@(context.Deadline?.ToShortDateString() ?? "n/a")</MudTd>
+        <MudTd>
+            @if (context.IsComplete)
+            {
+                <MudFab Icon="@Icons.Material.Delete" Variant="Variant.Filled" Color="Color.Error" Size="Size.Small"></MudFab>
+            }
+            else
+            {
+                <MudFab Icon="@Icons.Material.Check" Variant="Variant.Filled" Color="Color.Success" Size="Size.Small"></MudFab>
+            }
+        </MudTd>
+    </RowTemplate>
+</MudTable>

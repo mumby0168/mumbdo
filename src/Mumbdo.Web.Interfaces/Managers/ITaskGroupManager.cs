@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,5 +11,7 @@ namespace Mumbdo.Web.Interfaces.Managers
         Task<IEnumerable<ItemGroupDto>> GetAllGroupsAsync();
 
         Task<string> AddGroupAsync(ItemGroupDto dto);
+
+        Task<ItemGroupDto> GetAsync(Guid id);
     }
 }

@@ -4,4 +4,10 @@
         <TargetFramework>net5.0</TargetFramework>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Mumbdo.Application\Mumbdo.Application.csproj" />
+      <ProjectReference Include="..\Mumbdo.Domain\Mumbdo.Domain.csproj" />
+      <ProjectReference Include="..\Mumbdo.Infrastructure\Mumbdo.Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>

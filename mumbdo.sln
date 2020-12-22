@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mumbdo.Application.Interfac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mumbdo.Domain", "src\Mumbdo.Domain\Mumbdo.Domain.csproj", "{8B012BF1-E650-4786-800D-47A31425CABC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mumbdo.Infastructure", "src\Mumbdo.Infastructure\Mumbdo.Infastructure.csproj", "{45FE446A-0B68-44EC-832F-8A6F7F0D693A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mumbdo.Infrastructure", "src\Mumbdo.Infrastructure\Mumbdo.Infrastructure.csproj", "{45FE446A-0B68-44EC-832F-8A6F7F0D693A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mumbdo.Domain.Tests", "tests\Mumbdo.Domain.Tests\Mumbdo.Domain.Tests.csproj", "{5FCA4B8B-2588-4917-BE7F-13BC80C7DE87}"
 EndProject

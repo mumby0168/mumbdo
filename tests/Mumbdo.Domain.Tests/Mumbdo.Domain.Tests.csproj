@@ -15,4 +15,8 @@
     <PackageReference Include="Shouldly" Version="4.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Mumbdo.Domain\Mumbdo.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

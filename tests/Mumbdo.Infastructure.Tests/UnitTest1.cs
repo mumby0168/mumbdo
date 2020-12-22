@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace Mumbdo.Infastructure.Tests
+namespace Mumbdo.Infrastructure.Tests
 {
     public class Tests
     {

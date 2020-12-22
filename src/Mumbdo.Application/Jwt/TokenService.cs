@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using Mumbdo.Application.Configuration;
+using Mumbdo.Application.Exceptions;
+using Mumbdo.Application.Interfaces.Repositories;
 using Mumbdo.Domain.Entities;
 using Mumbdo.Shared.Dtos;
 
@@ -39,5 +41,7 @@ namespace Mumbdo.Application.Jwt
             var token = handler.CreateToken(descriptor);
             return handler.WriteToken(token);
         }
+
+        
     }
 }

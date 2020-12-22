@@ -24,16 +24,13 @@ namespace Mumbdo.Infrastructure
                 .AddConvey()
                 .AddMongo(builder => builder.WithDatabase(DatabaseName)
                     .WithConnectionString(environment.IsProduction() ? configuration[KeyVaultSecretKey] : LocalDevConnectionString))
-                .AddMongoRepository<UserDocument, Guid>("users");
+                .AddMongoRepository<UserDocument, Guid>("users")
+                .AddMongoRepository<RefreshTokenDocument, Guid>("refresh-tokens");
+            
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IRefreshTokenRepository, RefreshTokenRepository>();
             return services;
         }
 
-        public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app)
-        {
-            
-            return app;
-        }
-        
     }
 }

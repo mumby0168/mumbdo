@@ -1,7 +1,11 @@
+using System;
+using System.Diagnostics.SymbolStore;
 using System.Threading.Tasks;
 using Moq;
 using Moq.AutoMock;
+using Mumbdo.Application.Exceptions;
 using Mumbdo.Application.Interfaces.Repositories;
+using Mumbdo.Application.Jwt;
 using Mumbdo.Application.Services;
 using Mumbdo.Domain.Aggregates;
 using Mumbdo.Domain.Entities;
@@ -10,6 +14,7 @@ using Mumbdo.Domain.ValueObjects;
 using Mumbdo.Shared;
 using Mumbdo.Shared.Dtos;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Mumbdo.Application.Tests.Services
 {
@@ -76,6 +81,122 @@ namespace Mumbdo.Application.Tests.Services
 
             //Assert
             _mocker.GetMock<IUserRepository>().Verify(o => o.SaveAsync(user.Object));
+        }
+
+        [Test]
+        public void SignInAsync_InvalidEmailAddress_ThrowsInvalidCredentials()
+        {
+            //Arrange
+            var sut = CreateSut();
+
+            //Act
+            //Assert
+            Assert.ThrowsAsync<InvalidUserCredentialsException>(() =>
+                sut.SignInAsync(new SignInDto(Email, Password)));
+        }
+
+        [Test]
+        public void SignInAsync_WrongPassword_ThrowsInvalidCredentials()
+        {
+            //Arrange
+            var sut = CreateSut();
+            var user = new Mock<IUser>();
+            _mocker.GetMock<IUserRepository>()
+                .Setup(o => o.GetByEmailAsync(Email))
+                .ReturnsAsync(user.Object);
+
+            //Act
+            //Assert
+            Assert.ThrowsAsync<InvalidUserCredentialsException>(() =>
+                sut.SignInAsync(new SignInDto(Email, Password)));
+            _mocker.GetMock<IPasswordService>()
+                .Verify(o => o.CheckPassword(Password, user.Object.Password));
+        }
+
+        [Test]
+        public async Task SignInAsync_ValidCredentials_ReturnsAndSavesTokenData()
+        {
+            //Arrange
+            var sut = CreateSut();
+            var user = new Mock<IUser>();
+            _mocker.GetMock<IUserRepository>()
+                .Setup(o => o.GetByEmailAsync(Email))
+                .ReturnsAsync(user.Object);
+            var token = "a super secret token";
+            var refresh = "a super secret refresh token";
+            _mocker.GetMock<ITokenService>().Setup(o => o.CreateToken(user.Object)).Returns(token);
+            _mocker.GetMock<IPasswordService>().Setup(o => o.GenerateSalt(32)).Returns(refresh);
+            _mocker.GetMock<IPasswordService>().Setup(o => o.CheckPassword(Password, user.Object.Password))
+                .Returns(true);
+
+            //Act
+            var result = await sut.SignInAsync(new SignInDto(Email, Password));
+            result.Refresh.ShouldBe(refresh);
+            result.Token.ShouldBe(token);
+            _mocker.GetMock<IRefreshTokenRepository>().Verify(o => o.SaveTokenAsync(user.Object.Id, refresh, It.IsAny<DateTime>()));
+        }
+
+        [Test]
+        public void RefreshAsync_InvalidUser_ThrowsInvalidOperation()
+        {
+            //Arrange
+            var sut = CreateSut();
+            _mocker.GetMock<ICurrentUserService>()
+                .Setup(o => o.GetCurrentUser())
+                .Returns(new CurrentUser(Guid.Empty, "", ""));
+            
+            //Act
+            //Assert
+            Assert.ThrowsAsync<InvalidOperationException>(() => sut.RefreshAsync("token"));
+        }
+
+        [Test]
+        public void RefreshAsync_InvalidRefreshToken_ThrowsInvalidRefreshToken()
+        {
+            //Arrange
+            var sut = CreateSut();
+            var email = "test@test.com";
+            var user = new Mock<IUser>();
+            _mocker.GetMock<ICurrentUserService>()
+                .Setup(o => o.GetCurrentUser())
+                .Returns(new CurrentUser(Guid.Empty, email, ""));
+            _mocker.GetMock<IUserRepository>()
+                .Setup(o => o.GetByEmailAsync(email))
+                .ReturnsAsync(user.Object);
+            
+            //Act
+            //Assert
+            Assert.ThrowsAsync<InvalidRefreshTokenException>(() => sut.RefreshAsync("token"));
+        }
+
+        [Test]
+        public async Task RefreshAsync_ValidToken_RefreshesToken()
+        {
+            //Arrange
+            var sut = CreateSut();
+            var email = "test@test.com";
+            var user = new Mock<IUser>();
+            _mocker.GetMock<ICurrentUserService>()
+                .Setup(o => o.GetCurrentUser())
+                .Returns(new CurrentUser(Guid.Empty, email, ""));
+            _mocker.GetMock<IUserRepository>()
+                .Setup(o => o.GetByEmailAsync(email))
+                .ReturnsAsync(user.Object);
+            var refreshToken = "refresh-token";
+            var token = "token";
+            _mocker.GetMock<ITokenService>().Setup(o => o.CreateToken(user.Object)).Returns(token);
+            
+
+            _mocker.GetMock<IRefreshTokenRepository>()
+                .Setup(o => o.IsTokenValid(user.Object.Id, refreshToken))
+                .ReturnsAsync(true);
+
+            //Act
+            var newToken = await sut.RefreshAsync(refreshToken);
+
+            //Assert
+            newToken.Refresh.ShouldBe(refreshToken);
+            newToken.Token.ShouldBe(token);
         }
 
         private IUserService CreateSut() => _mocker.CreateInstance<UserService>();

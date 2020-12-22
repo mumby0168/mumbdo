@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Convey.Persistence.MongoDB;
 using Mumbdo.Application.Interfaces.Repositories;
@@ -12,10 +13,28 @@ namespace Mumbdo.Infrastructure.Repositories
 
         public RefreshTokenRepository(IMongoRepository<RefreshTokenDocument, Guid> repository) => _repository = repository;
 
-        public Task SaveTokenAsync(Guid userId, string token, DateTime expires) => 
-            _repository.AddAsync(new RefreshTokenDocument(Guid.NewGuid(), token, userId, DateTime.Now.AddDays(1)));
+        public async Task SaveTokenAsync(Guid userId, string token, DateTime expires)
+        {
+            var existing = await _repository.GetAsync(o => o.UserId == userId);
+            
+            if (existing is not null)
+                await _repository.DeleteAsync(existing.Id);
+            
+            await _repository.AddAsync(new RefreshTokenDocument(Guid.NewGuid(), token, userId, expires));
+        }
+            
 
         public Task<bool> IsTokenValid(Guid userId, string token)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RevokeTokenAsync(Guid userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<Tuple<Guid, DateTime>>> GetAllAsync()
         {
             throw new NotImplementedException();
         }

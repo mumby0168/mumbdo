@@ -22,14 +22,25 @@ namespace Mumbdo.Application.Services
         private readonly ILogger<UserService> _logger;
         private readonly IUserAggregate _userAggregate;
         private readonly ITokenService _tokenService;
+        private readonly IRefreshTokenRepository _refreshTokenRepository;
+        private readonly ICurrentUserService _currentUserService;
 
-        public UserService(IPasswordService passwordService, IUserRepository userRepository, ILogger<UserService> logger, IUserAggregate userAggregate, ITokenService tokenService)
+        public UserService(
+            IPasswordService passwordService, 
+            IUserRepository userRepository, 
+            ILogger<UserService> logger, 
+            IUserAggregate userAggregate, 
+            ITokenService tokenService, 
+            IRefreshTokenRepository refreshTokenRepository, 
+            ICurrentUserService currentUserService)
         {
             _passwordService = passwordService;
             _userRepository = userRepository;
             _logger = logger;
             _userAggregate = userAggregate;
             _tokenService = tokenService;
+            _refreshTokenRepository = refreshTokenRepository;
+            _currentUserService = currentUserService;
         }
         
         public async Task CreateAsync(CreateUserDto dto)
@@ -54,7 +65,22 @@ namespace Mumbdo.Application.Services
                 throw new InvalidUserCredentialsException();
 
             var token = _tokenService.CreateToken(user);
-            return new JwtTokenDto(token, "");
+            var refresh = _passwordService.GenerateSalt();
+            await _refreshTokenRepository.SaveTokenAsync(user.Id, refresh, DateTime.Now.AddHours(3));
+            return new JwtTokenDto(token, refresh);
+        }
+        
+        public async Task<JwtTokenDto> RefreshAsync(string refreshToken)
+        {
+            var user = await _userRepository.GetByEmailAsync(_currentUserService.GetCurrentUser().Email);
+            if (user is null)
+                throw new InvalidOperationException("User accessing the system is not in our records");
+
+            if (!await _refreshTokenRepository.IsTokenValid(user.Id, refreshToken))
+                throw new InvalidRefreshTokenException();
+            
+            var newToken = _tokenService.CreateToken(user);
+            return new JwtTokenDto(newToken, refreshToken);
         }
     }
 }

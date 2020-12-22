@@ -63,6 +63,7 @@ namespace Mumbdo.Api
             });
 
             services.AddControllers();
+            services.AddHttpContextAccessor();
 
             services.AddTransient<ExceptionHandlerMiddleware>();
         }

@@ -34,18 +34,18 @@ namespace Mumbdo.Api.Controllers
             return Ok();
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Get()
-        {
-            var users = await _repository.FindAsync(u => u.Email.Contains("@"));
-            return Ok(users);
-        }
-
         [HttpPost("signin")]
         public async Task<IActionResult> SignIn([FromBody] SignInDto dto)
         {
             var result = await _userService.SignInAsync(dto);
             return Ok(result);
+        }
+
+        [HttpGet("refresh/{token}")]
+        public async Task<IActionResult> Refresh([FromRoute] string token)
+        {
+            var newToken = await _userService.RefreshAsync(token);
+            return Ok(newToken);
         }
     }
 }

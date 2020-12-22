@@ -11,6 +11,7 @@ namespace Mumbdo.Application
             services.AddSingleton<IPasswordService, Pbkdf2PasswordService>();
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<ITokenService, TokenService>();
+            services.AddTransient<ICurrentUserService, CurrentUserService>();
             return services;
         }
         

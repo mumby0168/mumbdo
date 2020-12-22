@@ -9,5 +9,7 @@ namespace Mumbdo.Application.Services
         Task CreateAsync(CreateUserDto dto);
 
         Task<JwtTokenDto> SignInAsync(SignInDto dto);
+
+        Task<JwtTokenDto> RefreshAsync(string refreshToken);
     }
 }

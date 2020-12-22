@@ -6,6 +6,8 @@ namespace Mumbdo.Shared.Codes
 
         public const string EmailInUse = "email_in_use";
 
-        public const string PasswordToWeak = "password_to_weak";    
+        public const string PasswordToWeak = "password_to_weak";
+        
+        public const string InvalidCredentials = "invalid_credentials";
     }
 }

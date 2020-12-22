@@ -40,5 +40,12 @@ namespace Mumbdo.Api.Controllers
             var users = await _repository.FindAsync(u => u.Email.Contains("@"));
             return Ok(users);
         }
+
+        [HttpPost("signin")]
+        public async Task<IActionResult> SignIn([FromBody] SignInDto dto)
+        {
+            var result = await _userService.SignInAsync(dto);
+            return Ok(result);
+        }
     }
 }

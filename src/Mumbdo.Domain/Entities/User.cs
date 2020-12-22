@@ -8,12 +8,14 @@ namespace Mumbdo.Domain.Entities
         public Guid Id { get; }
         public string Email { get; }
         public Password Password { get; }
+        public string Role { get; }
 
-        internal User(Guid id, string email, Password password)
+        public User(Guid id, string email, Password password)
         {
             Id = id;
             Email = email;
             Password = password;
+            Role = Roles.User;
         }
         
         private User(){}

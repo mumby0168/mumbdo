@@ -20,5 +20,11 @@ namespace Mumbdo.Infrastructure.Repositories
 
 
         public Task SaveAsync(IUser user) => _repository.AddAsync(user.AsDocument());
+
+        public async Task<IUser> GetByEmailAsync(string email)
+        {
+            var userDoc = await _repository.GetAsync(ud => ud.Email == email);
+            return userDoc?.AsUser();
+        }
     }
 }

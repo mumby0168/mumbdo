@@ -12,16 +12,24 @@ namespace Mumbdo.Infrastructure.Documents
         
         public string Password { get; private set; }
 
-        public UserDocument(Guid id, string email, string password)
+        public string Role { get; private set; }
+
+        public UserDocument(Guid id, string email, string password, string role)
         {
             Id = id;
             Email = email;
             Password = password;
+            Role = role;
         }
 
         public UserDocument()
         {
             
+        }
+
+        public IUser AsUser()
+        {
+            return new User(Id, Email, Mumbdo.Domain.ValueObjects.Password.UnPack(Password));
         }
     }
 
@@ -29,7 +37,7 @@ namespace Mumbdo.Infrastructure.Documents
     {
         public static UserDocument AsDocument(this IUser user)
         {
-            return new UserDocument(user.Id, user.Email, user.Password.Pack());
+            return new UserDocument(user.Id, user.Email, user.Password.Pack(), user.Role);
         }
     }
 }

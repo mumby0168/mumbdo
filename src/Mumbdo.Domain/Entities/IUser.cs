@@ -3,6 +3,10 @@ using Mumbdo.Domain.ValueObjects;
 
 namespace Mumbdo.Domain.Entities
 {
+    public static class Roles
+    {
+        public const string User = "user";
+    }
     public interface IUser
     {
         Guid Id { get; }
@@ -10,5 +14,7 @@ namespace Mumbdo.Domain.Entities
         string Email { get; }
         
         Password Password { get; }
+        
+        string Role { get; }
     }
 }

@@ -7,5 +7,7 @@ namespace Mumbdo.Application.Services
     public interface IUserService
     {
         Task CreateAsync(CreateUserDto dto);
+
+        Task<JwtTokenDto> SignInAsync(SignInDto dto);
     }
 }

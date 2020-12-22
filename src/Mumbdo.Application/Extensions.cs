@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Mumbdo.Application.Jwt;
 using Mumbdo.Application.Services;
 
 namespace Mumbdo.Application
@@ -9,6 +10,7 @@ namespace Mumbdo.Application
         {
             services.AddSingleton<IPasswordService, Pbkdf2PasswordService>();
             services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<ITokenService, TokenService>();
             return services;
         }
         

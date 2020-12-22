@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Mumbdo.Application.Exceptions;
 using Mumbdo.Application.Interfaces.Repositories;
 using Mumbdo.Application.Jwt;
 using Mumbdo.Domain.Aggregates;
@@ -47,10 +48,10 @@ namespace Mumbdo.Application.Services
         {
             IUser user = await _userRepository.GetByEmailAsync(dto.Email);
             if (user is null)
-                throw new InvalidCredentialException();
+                throw new InvalidUserCredentialsException();
 
             if (!_passwordService.CheckPassword(dto.Password, user.Password))
-                throw new InvalidCredentialException();
+                throw new InvalidUserCredentialsException();
 
             var token = _tokenService.CreateToken(user);
             return new JwtTokenDto(token, "");

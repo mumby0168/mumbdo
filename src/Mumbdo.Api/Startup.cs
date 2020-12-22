@@ -64,8 +64,7 @@ namespace Mumbdo.Api
 
             services.AddControllers();
 
-            services.AddTransient<DomainExceptionMiddleware>();
-            services.AddTransient<ApplicationExceptionMiddleware>();
+            services.AddTransient<ExceptionHandlerMiddleware>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -80,9 +79,8 @@ namespace Mumbdo.Api
             
             app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseMiddleware<DomainExceptionMiddleware>();
-            app.UseMiddleware<ApplicationExceptionMiddleware>();
+            
+            app.UseMiddleware<ExceptionHandlerMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

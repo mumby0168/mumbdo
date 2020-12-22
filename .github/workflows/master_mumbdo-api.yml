@@ -21,10 +21,13 @@ jobs:
         dotnet-version: '5.0.x'
 
     - name: Build with dotnet
-      run: dotnet build --configuration Release
+      run: dotnet build src/Mumbdo.Api/Mumbdo.Api.csproj --configuration Release
+    
+    - name: Test with dotnet
+      run: dotnet test mumbdo.sln
 
     - name: dotnet publish
-      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      run: dotnet publish src/Mumbdo.Api/Mumbdo.Api.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2

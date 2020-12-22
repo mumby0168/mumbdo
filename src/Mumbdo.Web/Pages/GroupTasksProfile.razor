@@ -1,5 +1,6 @@
 @page "/group-tasks/{id}"
-@inject ITaskGroupManager TaskGroupManager
+@using Mumbdo.Shared.Dtos
+@inject IItemGroupManager ItemGroupManager
 
 @code {
 
@@ -22,7 +23,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        Group = await TaskGroupManager.GetAsync(GroupId);
+        Group = await ItemGroupManager.GetAsync(GroupId);
         await  base.OnParametersSetAsync();
     }   
 

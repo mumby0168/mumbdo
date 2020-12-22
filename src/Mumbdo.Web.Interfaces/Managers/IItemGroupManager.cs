@@ -3,10 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mumbdo.Shared;
+using Mumbdo.Shared.Dtos;
 
 namespace Mumbdo.Web.Interfaces.Managers
 {
-    public interface ITaskGroupManager
+    public interface IItemGroupManager
     {
         Task<IEnumerable<ItemGroupDto>> GetAllGroupsAsync();
 

@@ -8,6 +8,7 @@ using Mumbdo.Domain.Entities;
 using Mumbdo.Domain.Exceptions;
 using Mumbdo.Domain.ValueObjects;
 using Mumbdo.Shared;
+using Mumbdo.Shared.Dtos;
 using NUnit.Framework;
 
 namespace Mumbdo.Application.Tests.Services

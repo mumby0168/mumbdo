@@ -6,6 +6,7 @@ using Mumbdo.Application.Interfaces.Repositories;
 using Mumbdo.Domain.Aggregates;
 using Mumbdo.Domain.Exceptions;
 using Mumbdo.Shared;
+using Mumbdo.Shared.Dtos;
 
 namespace Mumbdo.Application.Services
 {

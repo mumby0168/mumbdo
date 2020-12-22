@@ -3,7 +3,7 @@ using Mumbdo.Shared;
 
 namespace Mumbdo.Web.Interfaces.Managers
 {
-    public interface ITaskManager
+    public interface IItemManager
     {
         
     }

@@ -22,7 +22,7 @@ namespace Mumbdo.Web
             builder.Services.AddMudBlazorDialog();
             builder.Services.AddMudBlazorSnackbar();
             builder.Services.AddMudBlazorResizeListener();
-            builder.Services.AddSingleton<ITaskGroupManager, TaskGroupManager>();
+            builder.Services.AddSingleton<IItemGroupManager, ItemGroupManager>();
 
             await builder.Build().RunAsync();
         }

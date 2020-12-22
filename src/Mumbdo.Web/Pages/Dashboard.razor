@@ -1,5 +1,6 @@
 @page "/"
-@inject ITaskGroupManager TaskGroupManager;
+@using Mumbdo.Shared.Dtos
+@inject IItemGroupManager ItemGroupManager;
 @inject IDialogService DialogService
 
 
@@ -24,7 +25,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Groups = (await TaskGroupManager.GetAllGroupsAsync()).ToList();
+        Groups = (await ItemGroupManager.GetAllGroupsAsync()).ToList();
         await base.OnInitializedAsync();
     }
 
@@ -37,7 +38,7 @@
         if (!res.Cancelled)
         {
             Console.WriteLine("Was not cancelled");
-            Groups = (await TaskGroupManager.GetAllGroupsAsync()).ToList();
+            Groups = (await ItemGroupManager.GetAllGroupsAsync()).ToList();
         }
     }
     

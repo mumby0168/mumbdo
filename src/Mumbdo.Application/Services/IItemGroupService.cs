@@ -1,11 +1,10 @@
 using System.Threading.Tasks;
-using Mumbdo.Shared;
 using Mumbdo.Shared.Dtos;
 
 namespace Mumbdo.Application.Services
 {
-    public interface IUserService
+    public interface IItemGroupService
     {
-        Task CreateAsync(CreateUserDto dto);
+        Task CreateAsync(CreateItemGroupDto dto);
     }
 }

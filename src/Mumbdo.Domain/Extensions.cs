@@ -8,6 +8,7 @@ namespace Mumbdo.Domain
         public static IServiceCollection AddDomain(this IServiceCollection services)
         {
             services.AddSingleton<IUserAggregate, UserAggregate>();
+            services.AddSingleton<IItemGroupAggregate, ItemGroupAggregate>();
             return services;
         }
         

@@ -1,4 +1,5 @@
-@inject ITaskGroupManager TaskGroupManager
+@using Mumbdo.Shared.Dtos
+@inject IItemGroupManager ItemGroupManager
 
 
 
@@ -49,7 +50,7 @@
         {
             Console.WriteLine(Name);
             Console.WriteLine(Description);
-            var error = await TaskGroupManager.AddGroupAsync(new ItemGroupDto(Guid.NewGuid(), Name, Description, ImageUri, new List<TaskDto>()));
+            var error = await ItemGroupManager.AddGroupAsync(new ItemGroupDto(Guid.NewGuid(), Name, Description, ImageUri, new List<TaskDto>()));
             if (error != string.Empty)
             {
                 ErrorText = error;

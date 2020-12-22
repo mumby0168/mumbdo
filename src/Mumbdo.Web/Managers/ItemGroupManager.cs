@@ -5,11 +5,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using MudBlazor;
 using Mumbdo.Shared;
+using Mumbdo.Shared.Dtos;
 using Mumbdo.Web.Interfaces.Managers;
 
 namespace Mumbdo.Web.Managers
 {
-    public class TaskGroupManager : ITaskGroupManager
+    public class ItemGroupManager : IItemGroupManager
     {
         private List<ItemGroupDto> _itemGroups;
 
@@ -19,7 +20,7 @@ namespace Mumbdo.Web.Managers
             new ("Item 1", DateTime.Now.AddDays(-1), true),
         };
 
-        public TaskGroupManager()
+        public ItemGroupManager()
         {
             _itemGroups = new List<ItemGroupDto>
             {

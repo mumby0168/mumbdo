@@ -22,7 +22,7 @@ namespace Mumbdo.Api
                     if (context.HostingEnvironment.IsProduction())
                     {
                         var builtConfig = config.Build();
-                        var secretClient = new SecretClient(new Uri($"https://{builtConfig["KeyVaultName"]}.vault.azure.net/"),
+                        var secretClient = new SecretClient(new Uri($"https://mumbdo-vault.vault.azure.net/"),
                             new DefaultAzureCredential());
                         config.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
                     }

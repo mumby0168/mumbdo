@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Convey.Persistence.MongoDB;
 using DnsClient.Internal;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Mumbdo.Application.Services;
 using Mumbdo.Infrastructure.Documents;
@@ -17,13 +16,13 @@ namespace Mumbdo.Api.Controllers
     {
         private readonly IUserService _userService;
         private readonly ILogger<UsersController> _logger;
-        private readonly IConfiguration _configuration;
+        private readonly IMongoRepository<UserDocument, Guid> _repository;
 
-        public UsersController(IUserService userService, ILogger<UsersController> logger, IConfiguration configuration)
+        public UsersController(IUserService userService, ILogger<UsersController> logger, IMongoRepository<UserDocument, Guid> repository)
         {
             _userService = userService;
             _logger = logger;
-            _configuration = configuration;
+            _repository = repository;
         }
 
         [HttpPost("signup")]
@@ -38,7 +37,8 @@ namespace Mumbdo.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return Ok(_configuration["db-prod"]);
+            var users = await _repository.FindAsync(u => u.Email.Contains("@"));
+            return Ok(users);
         }
     }
 }

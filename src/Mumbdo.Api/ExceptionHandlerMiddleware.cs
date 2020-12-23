@@ -20,12 +20,12 @@ namespace Mumbdo.Api
             catch (ApplicationException e)
             {
                 context.Response.StatusCode = (int) e.StatusCode;
-                await context.Response.WriteAsJsonAsync(new DomainErrorDto(e.ErrorCode, e.Message));
+                await context.Response.WriteAsJsonAsync(new MumbdoErrorDto(e.ErrorCode, e.Message));
             }
             catch (DomainException e)
             {
                 context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
-                await context.Response.WriteAsJsonAsync(new DomainErrorDto(e.ErrorCode, e.Message));
+                await context.Response.WriteAsJsonAsync(new MumbdoErrorDto(e.ErrorCode, e.Message));
             }
             
         }

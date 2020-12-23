@@ -1,10 +1,7 @@
 ﻿@page "/"
-@using Mumbdo.Shared.Dtos
-@using System.Text.Json
-@using System.Net
-@using System.Text
 @inject NavigationManager NavigationManager
-@inject ISettings Settings
+@inject IAuthenticationProxy AuthenticationProxy
+
 @code {
 
     [CascadingParameter]
@@ -24,22 +21,14 @@
         {
             Form.Reset();
             Form.ResetValidation();
-            var client = new HttpClient();
-            var dto = new SignInDto(Email, Password);
-            var result = await client.PostAsync($"{Settings.BaseUrl}/users/signin", new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json"));
-            if (result.IsSuccessStatusCode)
+            var token = await AuthenticationProxy.SignInAsync(Email, Password);
+            if (token is not null)
             {
-                var token = JsonSerializer.Deserialize<JwtTokenDto>(await result.Content.ReadAsStringAsync(), new JsonSerializerOptions{PropertyNameCaseInsensitive = true});
-                Console.WriteLine($"Token collected {token}");
-                AuthenticationService.SignIn(new SignedInUser(token.Token));
+                await AuthenticationService.SignInAsync(token);
                 NavigationManager.NavigateTo("/dash");
+                return;
             }
-            else if (result.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                var responseDto = JsonSerializer.Deserialize<DomainErrorDto>(await result.Content.ReadAsStringAsync(), new JsonSerializerOptions{PropertyNameCaseInsensitive = true});
-                Console.WriteLine(responseDto.Code ?? "nothing");
-                Error = responseDto.Message;
-            }
+            Error = AuthenticationProxy.ErrorMessage;
         }
     }
 }

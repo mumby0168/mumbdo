@@ -11,10 +11,14 @@ using MudBlazor;
 using MudBlazor.Services;
 using Mumbdo.Shared;
 using Mumbdo.Web.Authentication;
+using Mumbdo.Web.Common;
 using Mumbdo.Web.Interfaces.Authentication;
+using Mumbdo.Web.Interfaces.Common;
 using Mumbdo.Web.Interfaces.Managers;
 using Mumbdo.Web.Interfaces.Settings;
+using Mumbdo.Web.Interfaces.Wrappers;
 using Mumbdo.Web.Managers;
+using Mumbdo.Web.Wrappers;
 
 namespace Mumbdo.Web
 {
@@ -32,15 +36,17 @@ namespace Mumbdo.Web
             builder.Services.AddAuthorizationCore();
             builder.Services.AddSingleton<IItemGroupManager, ItemGroupManager>();
             builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
+            builder.Services.AddSingleton<ILocalStorageManager, LocalStorageManager>();
+            builder.Services.AddSingleton<IJson, Json>();
+            builder.Services.AddScoped<IMumbdoHttpClient, MumbdoHttpClient>();
+            builder.Services.AddScoped<IAuthenticationProxy, AuthenticationProxy>();
+            builder.Services.AddSingleton<ITokenManager, TokenManager>();
 
-            var settings = new Settings.Settings()
-            {
-                BaseUrl = builder.HostEnvironment.BaseAddress + "api"
-            };
-
-            builder.Services.AddSingleton<ISettings>(settings);
 
             var host =  builder.Build();
+
+            var sp = host.Services;
+
             await host.RunAsync();
         }
     }

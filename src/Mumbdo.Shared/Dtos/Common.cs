@@ -1,4 +1,4 @@
 namespace Mumbdo.Shared.Dtos
 {
-    public record DomainErrorDto(string Code, string Message);
+    public record MumbdoErrorDto(string Code, string Message);
 }

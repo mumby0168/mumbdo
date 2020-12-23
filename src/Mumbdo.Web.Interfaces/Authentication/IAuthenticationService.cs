@@ -1,16 +1,19 @@
 using System;
 using System.Threading.Tasks;
 using Mumbdo.Shared;
+using Mumbdo.Shared.Dtos;
 
 namespace Mumbdo.Web.Interfaces.Authentication
 {
     public interface IAuthenticationService
     {
-        void SignIn(SignedInUser user);
+        Task SignInAsync(JwtTokenDto tokenDto);
 
         Task<bool> IsUserSignedInAsync();
+        
+        SignedInUser User { get; }
 
-        void SignOut();
+        Task SignOutAsync();
         
         string EmailAddress { get; }
         

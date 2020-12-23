@@ -1,19 +1,28 @@
 using System;
-using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Mumbdo.Shared;
+using Mumbdo.Shared.Dtos;
 using Mumbdo.Web.Interfaces.Authentication;
+using Mumbdo.Web.Interfaces.Managers;
 
 namespace Mumbdo.Web.Authentication
 {
     public class AuthenticationService : IAuthenticationService
     {
+        private readonly ITokenManager _tokenManager;
+
+        public AuthenticationService(ITokenManager tokenManager)
+        {
+            _tokenManager = tokenManager;
+        }
+        
         private SignedInUser _user = null;
         
-        public void SignIn(SignedInUser user)
+        public async Task SignInAsync(JwtTokenDto tokenDto)
         {
-            _user = user;
-            AuthenticationStateUpdated?.Invoke(null, null);
+            _user = new SignedInUser(tokenDto.Token);
+            await _tokenManager.SaveTokenAsync(tokenDto);
+            AuthenticationStateUpdated?.Invoke(null, EventArgs.Empty);
         }
 
         public async Task<bool> IsUserSignedInAsync()
@@ -22,20 +31,35 @@ namespace Mumbdo.Web.Authentication
             {
                 if (_user.Expiry > DateTime.Now)
                 {
-                    Console.WriteLine("User authorized");
                     return true;
                 }
-                Console.WriteLine(_user.Expiry.ToShortTimeString());
-                SignOut();
+                await SignOutAsync();
                 return false;
             }
+
+            var token = await _tokenManager.GetTokenAsync();
+            if (token is not null)
+            {
+                _user = new SignedInUser(token.Token);
+                if (_user.Expiry > DateTime.Now)
+                {
+                       
+                }
+                AuthenticationStateUpdated?.Invoke(null, EventArgs.Empty);
+            }
+
             return false;
         }
 
-        public void SignOut()
+        public SignedInUser User => _user;
+        
+
+        public Task SignOutAsync()
         {
             _user = null;
-            AuthenticationStateUpdated?.Invoke(null, null);
+            _tokenManager.RemoveTokenAsync();
+            AuthenticationStateUpdated?.Invoke(null, EventArgs.Empty);
+            return Task.CompletedTask;
         }
 
         public string EmailAddress => _user?.Email;

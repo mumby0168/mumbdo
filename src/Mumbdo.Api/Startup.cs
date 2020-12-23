@@ -90,11 +90,18 @@ namespace Mumbdo.Api
             app.UseStaticFiles();
 
             app.UseRouting();
+            
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapRazorPages();
+                endpoints.MapGet("/api", async context =>
+                {
+                    await context.Response.WriteAsync("Mumbdo API");
+                });
                 endpoints.MapControllers();
+                endpoints.MapRazorPages();
                 endpoints.MapFallbackToFile("index.html");
             });
         }

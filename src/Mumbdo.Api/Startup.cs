@@ -94,6 +94,8 @@ namespace Mumbdo.Api
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseMiddleware<ExceptionHandlerMiddleware>();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGet("/api", async context =>

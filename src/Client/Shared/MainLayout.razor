@@ -19,8 +19,19 @@
 <MudDialogProvider FullWidth="true" />
 <MudSnackbarProvider />
 <MudAppBar>
-    <MudIconButton Icon="@Icons.Material.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleOpen" />
-    <MudText Typo="Typo.h6">Mumbdo</MudText>
+    <AuthenticationView>
+        <Authenticated>
+            <MudIconButton Icon="@Icons.Material.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleOpen"/>
+            <MudText Typo="Typo.h6">Mumbdo</MudText>
+            <MudAppBarSpacer />
+            <MudIconButton Icon="@Icons.Material.ExitToApp" Color="Color.Inherit" Edge="Edge.End" OnClick="@SignOut"/>
+        </Authenticated>
+        <NotAuthenticated>
+            <MudIconButton Icon="@Icons.Material.Menu" Color="Color.Inherit" Edge="Edge.Start" />
+            <MudText Typo="Typo.h6">Mumbdo</MudText>
+        </NotAuthenticated>
+    </AuthenticationView>
+    
 </MudAppBar>
 <MudDrawer class="drawer" @bind-Open="@Open">
     <MudDrawerHeader>
@@ -29,13 +40,15 @@
 </MudDrawer>
 <MudPaper class="root">
     <MudContainer class="con">
-        <AuthenticationProvider>
-            @Body
-        </AuthenticationProvider>
+        @Body
     </MudContainer>
 </MudPaper>
 
 @code {
+    
+    [CascadingParameter]
+    public IAuthenticationService AuthenticationService { get; set; }
+    
     MudTheme Theme = new MudTheme()
     {
         Palette = new Palette()
@@ -57,6 +70,11 @@
             ActionDisabledBackground = "rgba(255,255,255, 0.12)"
         }
     };
+
+    void SignOut()
+    {
+        AuthenticationService.SignOut();
+    }
 
     bool Open { get; set; }
 

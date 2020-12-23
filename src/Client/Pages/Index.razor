@@ -1,15 +1,80 @@
 ﻿@page "/"
+@using Mumbdo.Shared.Dtos
+@using System.Text.Json
+@using System.Net
+@using System.Text
+@inject NavigationManager NavigationManager
+@inject ISettings Settings
 @code {
 
     [CascadingParameter]
     public IAuthenticationService AuthenticationService { get; set; }
+    string Email { get; set; }
+    
+    string Password { get; set; }
+    
+    string Error { get; set; }
+
+    MudForm Form;
+
+    async Task SignInAsync()
+    {
+        Form.Validate();
+        if (Form.IsValid)
+        {
+            Form.Reset();
+            Form.ResetValidation();
+            var client = new HttpClient();
+            var dto = new SignInDto(Email, Password);
+            var result = await client.PostAsync($"{Settings.BaseUrl}/users/signin", new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json"));
+            if (result.IsSuccessStatusCode)
+            {
+                var token = JsonSerializer.Deserialize<JwtTokenDto>(await result.Content.ReadAsStringAsync(), new JsonSerializerOptions{PropertyNameCaseInsensitive = true});
+                Console.WriteLine($"Token collected {token}");
+                AuthenticationService.SignIn(new SignedInUser(token.Token));
+                NavigationManager.NavigateTo("/dash");
+            }
+            else if (result.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                var responseDto = JsonSerializer.Deserialize<DomainErrorDto>(await result.Content.ReadAsStringAsync(), new JsonSerializerOptions{PropertyNameCaseInsensitive = true});
+                Console.WriteLine(responseDto.Code ?? "nothing");
+                Error = responseDto.Message;
+            }
+        }
+    }
 }
 
 <AuthenticationView>
     <Authenticated>
-        <MudText>Authenticated @AuthenticationService.EmailAddress</MudText>
+        @{
+            NavigationManager.NavigateTo("/dash");
+        }
     </Authenticated>
     <NotAuthenticated>
-        <MudText>Not Authenticated</MudText>
+        <MudContainer MaxWidth="MaxWidth.Small">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h4">Sign In</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Error">@Error</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderAvatar>
+                        <MudIcon Icon="@Icons.Material.Person"></MudIcon>
+                    </CardHeaderAvatar>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudForm @ref="@Form">
+                        <MudTextField Class="mt-3" Required="true" @bind-Value="@Email" Label="Email" InputType="InputType.Email"></MudTextField>
+                        <br/>
+                        <MudTextField Class="mt-3" Required="true" @bind-Value="@Password" Label="Password" InputType="InputType.Password"></MudTextField>
+                    </MudForm>
+                </MudCardContent>
+                 <MudCardActions>
+                    <MudButton OnClick="@SignInAsync" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Sign In</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudContainer>
     </NotAuthenticated>
 </AuthenticationView>
+
+

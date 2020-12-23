@@ -13,6 +13,7 @@ namespace Mumbdo.Web.Authentication
         public void SignIn(SignedInUser user)
         {
             _user = user;
+            AuthenticationStateUpdated?.Invoke(null, null);
         }
 
         public async Task<bool> IsUserSignedInAsync()

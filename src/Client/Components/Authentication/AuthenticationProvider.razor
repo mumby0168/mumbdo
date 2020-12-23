@@ -1,0 +1,10 @@
+@inject IAuthenticationService AuthenticationService
+
+<CascadingValue Value="@AuthenticationService">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

@@ -64,6 +64,8 @@ namespace Mumbdo.Api
 
             services.AddControllers();
             services.AddHttpContextAccessor();
+            services.AddControllersWithViews();
+            services.AddRazorPages();
 
             services.AddTransient<ExceptionHandlerMiddleware>();
         }
@@ -74,19 +76,26 @@ namespace Mumbdo.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseWebAssemblyDebugging();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
             }
 
+            app.UseHttpsRedirection();
+            app.UseBlazorFrameworkFiles();
+            app.UseStaticFiles();
+
             app.UseRouting();
-            
-            app.UseAuthentication();
-            app.UseAuthorization();
-            
-            app.UseMiddleware<ExceptionHandlerMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapRazorPages();
                 endpoints.MapControllers();
-                endpoints.MapGet("/", async context => { await context.Response.WriteAsync("Mumbdo API"); });
+                endpoints.MapFallbackToFile("index.html");
             });
         }
     }

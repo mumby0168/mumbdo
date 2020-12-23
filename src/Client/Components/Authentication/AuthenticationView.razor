@@ -1,0 +1,52 @@
+<h3>AuthenticationView</h3>
+
+@code {
+    
+    [CascadingParameter]
+    public IAuthenticationService AuthenticationService { get; set; }
+    
+    [Parameter]
+    public RenderFragment Authenticated { get; set; }
+    
+    [Parameter]
+    public RenderFragment NotAuthenticated { get; set; }
+    
+    public bool IsAuthenticated { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsAuthenticated = await AuthenticationService.IsUserSignedInAsync();
+        AuthenticationService.AuthenticationStateUpdated += (_,_) =>
+        {
+            Console.WriteLine("State has changed auth");
+            StateHasChanged();
+        };
+        await base.OnInitializedAsync();
+    }
+    
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            bool newState = await AuthenticationService.IsUserSignedInAsync();
+            if (newState != IsAuthenticated)
+            {
+                Console.WriteLine("Updating render state"); 
+                IsAuthenticated = newState;
+                StateHasChanged();
+            }
+            Console.WriteLine($"After render {IsAuthenticated}");   
+        }
+    }
+
+}
+
+@if (IsAuthenticated)
+{
+    @Authenticated
+}
+else
+{
+    @NotAuthenticated
+}

@@ -1,0 +1,15 @@
+﻿@page "/"
+@code {
+
+    [CascadingParameter]
+    public IAuthenticationService AuthenticationService { get; set; }
+}
+
+<AuthenticationView>
+    <Authenticated>
+        <MudText>Authenticated @AuthenticationService.EmailAddress</MudText>
+    </Authenticated>
+    <NotAuthenticated>
+        <MudText>Not Authenticated</MudText>
+    </NotAuthenticated>
+</AuthenticationView>

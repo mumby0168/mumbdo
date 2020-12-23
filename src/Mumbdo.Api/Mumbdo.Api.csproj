@@ -5,6 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Client\Mumbdo.Web.csproj" />
       <ProjectReference Include="..\Mumbdo.Application\Mumbdo.Application.csproj" />
       <ProjectReference Include="..\Mumbdo.Domain\Mumbdo.Domain.csproj" />
       <ProjectReference Include="..\Mumbdo.Infrastructure\Mumbdo.Infrastructure.csproj" />
@@ -14,6 +15,7 @@
       <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.0.2" />
       <PackageReference Include="Azure.Identity" Version="1.3.0" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.1" />
+      <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="5.0.1" />
     </ItemGroup>
 
 </Project>

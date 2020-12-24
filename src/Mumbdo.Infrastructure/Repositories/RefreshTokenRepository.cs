@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Convey.Persistence.MongoDB;
 using Mumbdo.Application.Interfaces.Repositories;
@@ -15,10 +16,15 @@ namespace Mumbdo.Infrastructure.Repositories
 
         public async Task SaveTokenAsync(Guid userId, string token, DateTime expires)
         {
-            var existing = await _repository.GetAsync(o => o.UserId == userId);
-            
-            if (existing is not null)
-                await _repository.DeleteAsync(existing.Id);
+            var existing = await _repository.FindAsync(o => o.UserId == userId);
+
+            if (existing.Any())
+            {
+                foreach (var refreshTokenDocument in existing)
+                {
+                    await _repository.DeleteAsync(refreshTokenDocument.Id);
+                }
+            }
             
             await _repository.AddAsync(new RefreshTokenDocument(Guid.NewGuid(), token, userId, expires));
         }

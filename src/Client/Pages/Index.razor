@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using System.ComponentModel.Design
 @inject NavigationManager NavigationManager
 @inject IAuthenticationProxy AuthenticationProxy
 
@@ -11,6 +12,8 @@
     string Password { get; set; }
     
     string Error { get; set; }
+    
+    bool IsLoading { get; set; }
 
     MudForm Form;
 
@@ -21,6 +24,7 @@
         {
             Form.Reset();
             Form.ResetValidation();
+            IsLoading = true;
             var token = await AuthenticationProxy.SignInAsync(Email, Password);
             if (token is not null)
             {
@@ -28,6 +32,7 @@
                 NavigationManager.NavigateTo("/dash");
                 return;
             }
+            IsLoading = false;
             Error = AuthenticationProxy.ErrorMessage;
         }
     }
@@ -52,11 +57,22 @@
                     </CardHeaderAvatar>
                 </MudCardHeader>
                 <MudCardContent>
-                    <MudForm @ref="@Form">
-                        <MudTextField Class="mt-3" Required="true" @bind-Value="@Email" Label="Email" InputType="InputType.Email"></MudTextField>
-                        <br/>
-                        <MudTextField Class="mt-3" Required="true" @bind-Value="@Password" Label="Password" InputType="InputType.Password"></MudTextField>
-                    </MudForm>
+                    @if (IsLoading)
+                    {
+                        <div align="center" style="padding: 2rem">
+                            <MudProgressCircular Color="Color.Primary" Style="height:150px;width:150px;" Indeterminate="true" />
+                            <br/>
+                            <MudText Typo="Typo.h6"> Signing you in ...</MudText>
+                        </div>
+                    }
+                    else
+                    {
+                        <MudForm @ref="@Form">
+                            <MudTextField Class="mt-3" Required="true" @bind-Value="@Email" Label="Email" InputType="InputType.Email"></MudTextField>
+                            <br/>
+                            <MudTextField Class="mt-3" Required="true" @bind-Value="@Password" Label="Password" InputType="InputType.Password"></MudTextField>
+                        </MudForm>
+                    }
                 </MudCardContent>
                  <MudCardActions>
                     <MudButton OnClick="@SignInAsync" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Sign In</MudButton>

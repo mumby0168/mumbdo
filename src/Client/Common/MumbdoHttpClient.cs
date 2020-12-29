@@ -21,6 +21,21 @@ namespace Mumbdo.Web.Common
             _json = json;
         }
         
+        public async Task<MumbdoErrorDto> ParseErrorAsync(HttpResponseMessage responseMessage)
+        {
+            var json = await responseMessage.Content.ReadAsStringAsync();
+            try
+            {
+                return await _json.DeserializeAsync<MumbdoErrorDto>(json);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+        
+        private StringContent JsonContent(string json) => new StringContent(json, Encoding.UTF8, ApplicationJson);
+        
         public async Task<Tuple<HttpResponseMessage, R>> PostDataAsync<T, R>(string url, T data) where R : class
         {
             var json = await _json.SerializeAsync(data);
@@ -40,19 +55,17 @@ namespace Mumbdo.Web.Common
             return await _httpClient.PostAsync(url, JsonContent(json));
         }
 
-        private StringContent JsonContent(string json) => new StringContent(json, Encoding.UTF8, ApplicationJson);
-        
-        public async Task<MumbdoErrorDto> ParseErrorAsync(HttpResponseMessage responseMessage)
+        public async Task<Tuple<HttpResponseMessage, JwtTokenDto>> GetAsync<T>(string url) where T : class
         {
-            var json = await responseMessage.Content.ReadAsStringAsync();
-            try
+            var result = await _httpClient.GetAsync(url);
+            if (result.StatusCode == HttpStatusCode.OK)
             {
-                return await _json.DeserializeAsync<MumbdoErrorDto>(json);
+                return
+                    new Tuple<HttpResponseMessage, JwtTokenDto>(result, await _json
+                        .DeserializeAsync<JwtTokenDto>(await result.Content.ReadAsStringAsync()));
             }
-            catch (Exception)
-            {
-                return null;
-            }
+
+            return new Tuple<HttpResponseMessage, JwtTokenDto>(result, null);
         }
 
         public void Dispose()

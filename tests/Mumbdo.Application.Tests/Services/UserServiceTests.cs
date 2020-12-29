@@ -137,17 +137,14 @@ namespace Mumbdo.Application.Tests.Services
         }
 
         [Test]
-        public void RefreshAsync_InvalidUser_ThrowsInvalidOperation()
+        public void RefreshAsync_InvalidEmail_ThrowsInvalidToken()
         {
             //Arrange
             var sut = CreateSut();
-            _mocker.GetMock<ICurrentUserService>()
-                .Setup(o => o.GetCurrentUser())
-                .Returns(new CurrentUser(Guid.Empty, "", ""));
-            
+
             //Act
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(() => sut.RefreshAsync("token"));
+            Assert.ThrowsAsync<InvalidRefreshTokenException>(() => sut.RefreshAsync("token", "invalid"));
         }
 
         [Test]
@@ -157,16 +154,13 @@ namespace Mumbdo.Application.Tests.Services
             var sut = CreateSut();
             var email = "test@test.com";
             var user = new Mock<IUser>();
-            _mocker.GetMock<ICurrentUserService>()
-                .Setup(o => o.GetCurrentUser())
-                .Returns(new CurrentUser(Guid.Empty, email, ""));
             _mocker.GetMock<IUserRepository>()
                 .Setup(o => o.GetByEmailAsync(email))
                 .ReturnsAsync(user.Object);
             
             //Act
             //Assert
-            Assert.ThrowsAsync<InvalidRefreshTokenException>(() => sut.RefreshAsync("token"));
+            Assert.ThrowsAsync<InvalidRefreshTokenException>(() => sut.RefreshAsync("token", email));
         }
 
         [Test]
@@ -176,9 +170,6 @@ namespace Mumbdo.Application.Tests.Services
             var sut = CreateSut();
             var email = "test@test.com";
             var user = new Mock<IUser>();
-            _mocker.GetMock<ICurrentUserService>()
-                .Setup(o => o.GetCurrentUser())
-                .Returns(new CurrentUser(Guid.Empty, email, ""));
             _mocker.GetMock<IUserRepository>()
                 .Setup(o => o.GetByEmailAsync(email))
                 .ReturnsAsync(user.Object);
@@ -192,7 +183,7 @@ namespace Mumbdo.Application.Tests.Services
                 .ReturnsAsync(true);
 
             //Act
-            var newToken = await sut.RefreshAsync(refreshToken);
+            var newToken = await sut.RefreshAsync(refreshToken, email);
 
             //Assert
             newToken.Refresh.ShouldBe(refreshToken);

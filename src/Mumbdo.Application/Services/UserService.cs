@@ -70,11 +70,11 @@ namespace Mumbdo.Application.Services
             return new JwtTokenDto(token, refresh);
         }
         
-        public async Task<JwtTokenDto> RefreshAsync(string refreshToken)
+        public async Task<JwtTokenDto> RefreshAsync(string refreshToken, string email)
         {
-            var user = await _userRepository.GetByEmailAsync(_currentUserService.GetCurrentUser().Email);
+            var user = await _userRepository.GetByEmailAsync(email);
             if (user is null)
-                throw new InvalidOperationException("User accessing the system is not in our records");
+                throw new InvalidRefreshTokenException();
 
             if (!await _refreshTokenRepository.IsTokenValid(user.Id, refreshToken))
                 throw new InvalidRefreshTokenException();

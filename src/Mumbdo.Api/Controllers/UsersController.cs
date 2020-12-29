@@ -41,10 +41,10 @@ namespace Mumbdo.Api.Controllers
             return Ok(result);
         }
 
-        [HttpGet("refresh/{token}")]
-        public async Task<IActionResult> Refresh([FromRoute] string token)
+        [HttpGet("refresh")]
+        public async Task<IActionResult> Refresh([FromQuery] string token, [FromQuery] string email)
         {
-            var newToken = await _userService.RefreshAsync(token);
+            var newToken = await _userService.RefreshAsync(token, email);
             return Ok(newToken);
         }
     }

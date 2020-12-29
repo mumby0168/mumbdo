@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Mumbdo.Shared.Dtos;
 using Mumbdo.Shared.Urls;
@@ -29,32 +30,53 @@ namespace Mumbdo.Web.Authentication
             }
         }
 
-        public Task<JwtTokenDto> RefreshAsync(string refreshToken)
+        public async Task<JwtTokenDto> RefreshAsync(string refreshToken, string email)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                var (result, token) = await _httpClient.GetAsync<JwtTokenDto>(AuthenticationUrls.Refresh(refreshToken, email));
+                if (token is not null)
+                    return token;
+                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                    await ProcessErrorAsync(result);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
+            _errorMessage = _httpClient.ConnectionRefusedErrorMessage;
+            return null;
         }
 
         public async Task<JwtTokenDto> SignInAsync(string username, string password)
         {
             try
             {
-                var (result, token) = await _httpClient.PostDataAsync<SignInDto, JwtTokenDto>(AuthenticationUrls.SignIn, new SignInDto(username, password));
-                if (token is not null)
-                {
-                    return token;
-                }
-
-                if (result.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    var error = await _httpClient.ParseErrorAsync(result);
-                    Console.WriteLine($"Signing user in error {error?.Code ?? "no_code"}");
-                    _errorMessage = error?.Message ?? _httpClient.ConnectionRefusedErrorMessage;
-                }
-            }
-            catch (Exception) { /* ignored*/ }
+                var (result, token) =
+                    await _httpClient.PostDataAsync<SignInDto, JwtTokenDto>(AuthenticationUrls.SignIn,
+                        new SignInDto(username, password));
                 
+                if (token is not null)
+                    return token;
+
+                if (result.StatusCode == HttpStatusCode.Unauthorized) 
+                    await ProcessErrorAsync(result);
+            }
+            catch (Exception)
+            {
+                /* ignored*/
+            }
+
             _errorMessage = _httpClient.ConnectionRefusedErrorMessage;
             return null;
+        }
+
+        private async Task ProcessErrorAsync(HttpResponseMessage responseMessage)
+        {
+            var error = await _httpClient.ParseErrorAsync(responseMessage);
+            Console.WriteLine($"Signing user in error {error?.Code ?? "no_code"}");
+            _errorMessage = error?.Message ?? _httpClient.ConnectionRefusedErrorMessage;
         }
     }
 }

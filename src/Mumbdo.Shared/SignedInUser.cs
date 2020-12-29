@@ -35,6 +35,11 @@ namespace Mumbdo.Shared
             }
         }
 
+        public SignedInUser()
+        {
+            
+        }
+
         private byte[] ParseBase64WithoutPadding (string base64) {
             switch (base64.Length % 4) {
                 case 2:
@@ -46,8 +51,12 @@ namespace Mumbdo.Shared
             }
             return Convert.FromBase64String (base64);
         }
-        
-        public DateTime Expiry { get; }
+
+        public DateTime Expiry
+        {
+            get;
+            init;
+        }
 
         public string Token { get; }
         

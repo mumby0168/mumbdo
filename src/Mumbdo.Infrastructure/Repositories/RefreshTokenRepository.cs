@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Convey.Persistence.MongoDB;
+using MongoDB.Driver;
 using Mumbdo.Application.Interfaces.Repositories;
 using Mumbdo.Infrastructure.Documents;
 

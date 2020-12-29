@@ -35,12 +35,13 @@ namespace Mumbdo.Web
             builder.Services.AddMudBlazorResizeListener();
             builder.Services.AddAuthorizationCore();
             builder.Services.AddSingleton<IItemGroupManager, ItemGroupManager>();
-            builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
             builder.Services.AddSingleton<ILocalStorageManager, LocalStorageManager>();
             builder.Services.AddSingleton<IJson, Json>();
             builder.Services.AddScoped<IMumbdoHttpClient, MumbdoHttpClient>();
             builder.Services.AddScoped<IAuthenticationProxy, AuthenticationProxy>();
             builder.Services.AddSingleton<ITokenManager, TokenManager>();
+            builder.Services.AddSingleton<IUserContext, UserContext>();
 
 
             var host =  builder.Build();

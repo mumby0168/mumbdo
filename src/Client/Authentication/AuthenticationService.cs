@@ -10,26 +10,29 @@ namespace Mumbdo.Web.Authentication
     public class AuthenticationService : IAuthenticationService
     {
         private readonly ITokenManager _tokenManager;
+        private readonly IAuthenticationProxy _authenticationProxy;
+        private readonly IUserContext _userContext;
 
-        public AuthenticationService(ITokenManager tokenManager)
+        public AuthenticationService(ITokenManager tokenManager, IAuthenticationProxy authenticationProxy, IUserContext userContext)
         {
             _tokenManager = tokenManager;
+            _authenticationProxy = authenticationProxy;
+            _userContext = userContext;
         }
         
-        private SignedInUser _user = null;
         
         public async Task SignInAsync(JwtTokenDto tokenDto)
         {
-            _user = new SignedInUser(tokenDto.Token);
+            _userContext.SignedInUser = new SignedInUser(tokenDto.Token);
             await _tokenManager.SaveTokenAsync(tokenDto);
             AuthenticationStateUpdated?.Invoke(null, EventArgs.Empty);
         }
 
         public async Task<bool> IsUserSignedInAsync()
         {
-            if (_user is not null)
+            if (_userContext.SignedInUser is not null)
             {
-                if (_user.Expiry > DateTime.Now)
+                if (_userContext.SignedInUser.Expiry > DateTime.Now)
                 {
                     return true;
                 }
@@ -40,33 +43,46 @@ namespace Mumbdo.Web.Authentication
             var token = await _tokenManager.GetTokenAsync();
             if (token is not null)
             {
-                _user = new SignedInUser(token.Token);
-                if (_user.Expiry > DateTime.Now)
+                _userContext.SignedInUser = new SignedInUser(token.Token);
+                if (_userContext.SignedInUser.Expiry < DateTime.Now)
                 {
-                       
+                    var newToken = await _authenticationProxy.RefreshAsync(token.Refresh, _userContext.SignedInUser.Email);
+                    if (newToken is null)
+                    {
+                        Console.WriteLine("Failed to use refresh token");
+                        _userContext.SignedInUser = null;
+                        await _tokenManager.RemoveTokenAsync();
+                        AuthenticationStateUpdated?.Invoke(null, EventArgs.Empty);
+                        return false;
+                    }
+
+                    _userContext.SignedInUser = new SignedInUser(token.Token);
+                    await _tokenManager.SaveTokenAsync(token);
+                    
                 }
                 AuthenticationStateUpdated?.Invoke(null, EventArgs.Empty);
+                return true;
             }
 
             return false;
         }
 
-        public SignedInUser User => _user;
+        public SignedInUser User => _userContext.SignedInUser;
         
 
         public Task SignOutAsync()
         {
-            _user = null;
+            _userContext.SignedInUser = null;
             _tokenManager.RemoveTokenAsync();
             AuthenticationStateUpdated?.Invoke(null, EventArgs.Empty);
             return Task.CompletedTask;
         }
 
-        public string EmailAddress => _user?.Email;
+        public string EmailAddress => _userContext.SignedInUser?.Email;
         
-        public string Role => _user?.Role;
+        public string Role => _userContext.SignedInUser?.Role;
         
-        public Guid Id => _user?.Id ?? Guid.Empty;
+        public Guid Id => _userContext.SignedInUser?.Id ?? Guid.Empty;
         
         public event EventHandler AuthenticationStateUpdated;
     }

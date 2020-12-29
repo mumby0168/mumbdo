@@ -11,8 +11,10 @@ namespace Mumbdo.Web.Interfaces.Common
 
         Task<HttpResponseMessage> PostAsync<T>(string url, T data);
 
-        string ConnectionRefusedErrorMessage => "The connection could not be made to our services";
+        string ConnectionRefusedErrorMessage => CommonNames.ConnectionRefusedError;
 
         Task<MumbdoErrorDto> ParseErrorAsync(HttpResponseMessage responseMessage);
+
+        Task<Tuple<HttpResponseMessage, JwtTokenDto>> GetAsync<T>(string url) where T : class;
     }
 }

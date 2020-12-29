@@ -6,7 +6,7 @@ namespace Mumbdo.Web.Interfaces.Authentication
 {
     public interface IAuthenticationProxy : IProxy
     {
-        Task<JwtTokenDto> RefreshAsync(string refreshToken);
+        Task<JwtTokenDto> RefreshAsync(string refreshToken, string email);
 
         Task<JwtTokenDto> SignInAsync(string username, string password);
     }

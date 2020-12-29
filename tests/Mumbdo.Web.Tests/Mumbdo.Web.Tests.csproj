@@ -15,4 +15,9 @@
     <PackageReference Include="Shouldly" Version="4.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Client\Mumbdo.Web.csproj" />
+    <ProjectReference Include="..\..\src\Mumbdo.Web.Interfaces\Mumbdo.Web.Interfaces.csproj" />
+  </ItemGroup>
+
 </Project>

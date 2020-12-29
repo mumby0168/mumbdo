@@ -31,10 +31,10 @@ namespace Mumbdo.Web.Managers
         
         public Task<IEnumerable<ItemGroupDto>> GetAllGroupsAsync() => Task.FromResult(_itemGroups.AsEnumerable());
 
-        public async Task<string> AddGroupAsync(ItemGroupDto dto)
+        public Task<string> AddGroupAsync(ItemGroupDto dto)
         {
             _itemGroups.Add(dto);
-            return string.Empty;
+            return Task.FromResult(string.Empty);
         }
 
         public Task<ItemGroupDto> GetAsync(Guid id)

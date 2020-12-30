@@ -60,8 +60,12 @@ namespace Mumbdo.Web.Authentication
                 if (token is not null)
                     return token;
 
-                if (result.StatusCode == HttpStatusCode.Unauthorized) 
+                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                {
                     await ProcessErrorAsync(result);
+                    return null;
+                }
+                    
             }
             catch (Exception)
             {
@@ -77,6 +81,7 @@ namespace Mumbdo.Web.Authentication
             var error = await _httpClient.ParseErrorAsync(responseMessage);
             Console.WriteLine($"Signing user in error {error?.Code ?? "no_code"}");
             _errorMessage = error?.Message ?? _httpClient.ConnectionRefusedErrorMessage;
+            Console.WriteLine($"Error: {_errorMessage}");
         }
     }
 }

@@ -76,6 +76,29 @@ namespace Mumbdo.Web.Authentication
             return null;
         }
 
+        public async Task SignUpAsync(string email, string password)
+        {
+            try
+            {
+                var result = await _httpClient.PostAsync(AuthenticationUrls.SignUp, new CreateUserDto(email, password));
+                
+                if(result.StatusCode == HttpStatusCode.OK)
+                    return;
+                
+                if (result.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    await ProcessErrorAsync(result);
+                    return;
+                }
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
+            _errorMessage = _httpClient.ConnectionRefusedErrorMessage;
+        }
+
         private async Task ProcessErrorAsync(HttpResponseMessage responseMessage)
         {
             var error = await _httpClient.ParseErrorAsync(responseMessage);

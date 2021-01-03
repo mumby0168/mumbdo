@@ -9,5 +9,7 @@ namespace Mumbdo.Web.Interfaces.Authentication
         Task<JwtTokenDto> RefreshAsync(string refreshToken, string email);
 
         Task<JwtTokenDto> SignInAsync(string username, string password);
+
+        Task SignUpAsync(string email, string password);
     }
 }

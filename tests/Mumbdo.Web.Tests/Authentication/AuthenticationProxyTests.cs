@@ -1,6 +1,8 @@
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Sources;
 using Moq;
@@ -146,7 +148,66 @@ namespace Mumbdo.Web.Tests.Authentication
             //Assert
             result.ShouldBe(tokenResponse);
         }
+
+        [Test]
+        public async Task SignUpAsync_BadRequest_SetsErrorMessage()
+        {
+            //Arrange
+            var sut = CreateSut();
+            var response = new HttpResponseMessage();
+            response.StatusCode = HttpStatusCode.BadRequest;
+            var error = "test error message";
+            _mocker.GetMock<IMumbdoHttpClient>()
+                .Setup(o => o.ParseErrorAsync(response))
+                .ReturnsAsync(new MumbdoErrorDto("code", error));
+
+            _mocker.GetMock<IMumbdoHttpClient>()
+                .Setup(o => o.PostAsync(AuthenticationUrls.SignUp, It.IsAny<CreateUserDto>()))
+                .ReturnsAsync(response);
+
+            //Act
+            await sut.SignUpAsync("email", "pass");
+
+            //Assert
+            sut.ErrorMessage.ShouldBe(error);
+        }
         
+        [Test]
+        public async Task SignUpAsync_NoConnection_SetsErrorMessage()
+        {
+            //Arrange
+            var sut = CreateSut();
+
+            _mocker.GetMock<IMumbdoHttpClient>()
+                .Setup(o => o.PostAsync(AuthenticationUrls.SignUp, It.IsAny<CreateUserDto>()))
+                .ThrowsAsync(new Exception());
+
+            //Act
+            await sut.SignUpAsync("email", "pass");
+
+            //Assert
+            sut.ErrorMessage.ShouldBe(CommonNames.ConnectionRefusedError);
+        }
+        
+        
+        [Test]
+        public async Task SignUpAsync_ValidDetails_NoException()
+        {
+            //Arrange
+            var sut = CreateSut();
+            var response = new HttpResponseMessage();
+            response.StatusCode = HttpStatusCode.OK;
+            var error = "test error message";
+
+            _mocker.GetMock<IMumbdoHttpClient>()
+                .Setup(o => o.PostAsync(AuthenticationUrls.SignUp, It.IsAny<CreateUserDto>()))
+                .ReturnsAsync(response);
+
+            //Act
+            //Assert
+            await sut.SignUpAsync("email", "pass");
+
+        }
         
 
         private IAuthenticationProxy CreateSut() => _mocker.CreateInstance<AuthenticationProxy>();

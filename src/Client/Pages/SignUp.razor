@@ -1,0 +1,87 @@
+@page "/signup"
+@inject IAuthenticationProxy AuthenticationProxy
+@inject NavigationManager NavigationManager
+
+@code {
+    string Email { get; set; }
+    
+    string Password { get; set; }
+    
+    string RePassword { get; set; }
+    
+    string Error { get; set; }
+    
+    bool IsLoading { get; set; }
+
+    MudForm Form;
+
+    async Task SignUpAsync()
+    {
+        Form.Validate();
+        if (Form.IsValid)
+        {
+            Form.Reset();
+            Form.ResetValidation();
+            IsLoading = true;
+            if (RePassword != Password)
+            {
+                Error = "The passwords entered do not match";
+                IsLoading = false;
+                return;
+            }
+
+            await AuthenticationProxy.SignUpAsync(Email, Password);
+            var error = AuthenticationProxy.ErrorMessage;
+            if (error != string.Empty)
+            {
+                Error = error;
+                Console.WriteLine($"Login error: {Error}");
+                IsLoading = false;
+                return;
+            }
+            NavigationManager.NavigateTo("/");
+            
+        }
+    }
+    
+}
+
+ <MudContainer MaxWidth="MaxWidth.Small">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h4">Sign Up</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Error">@Error</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderAvatar>
+                        <MudIcon Icon="@Icons.Material.AccountCircle"></MudIcon>
+                    </CardHeaderAvatar>
+                </MudCardHeader>
+                <MudCardContent>
+                    @if (IsLoading)
+                    {
+                        <div align="center" style="padding: 2rem">
+                            <MudProgressCircular Color="Color.Primary" Style="height:150px;width:150px;" Indeterminate="true" />
+                            <br/>
+                            <MudText Typo="Typo.h6"> Signing you up ...</MudText>
+                        </div>
+                    }
+                    else
+                    {
+                        <MudForm @ref="@Form">
+                            <MudTextField Class="mt-3" Required="true" @bind-Value="@Email" Label="Email" InputType="InputType.Email"></MudTextField>
+                            <br/>
+                            <MudTextField Class="mt-3" Required="true" @bind-Value="@Password" Label="Password" InputType="InputType.Password"></MudTextField>
+                            <br/>
+                            <MudTextField Class="mt-3" Required="true" @bind-Value="@RePassword" Label="Confirm Password" InputType="InputType.Password"></MudTextField>
+                        </MudForm>
+                        <div style="margin-top: 2rem">
+                            <MudLink Underline="Underline.Always" Href="/">Already have an account? Sign in here</MudLink>
+                        </div>
+                    }
+                </MudCardContent>
+                 <MudCardActions>
+                    <MudButton OnClick="@SignUpAsync" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Sign Up</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudContainer>

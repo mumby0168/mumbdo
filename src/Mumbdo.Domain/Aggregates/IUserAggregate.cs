@@ -5,6 +5,6 @@ namespace Mumbdo.Domain.Aggregates
 {
     public interface IUserAggregate
     {
-        IUser Create(string email, Password password);
+        IUserEntity Create(string email, Password password);
     }
 }

@@ -57,16 +57,16 @@ namespace Mumbdo.Application.Services
 
         public async Task<JwtTokenDto> SignInAsync(SignInDto dto)
         {
-            IUser user = await _userRepository.GetByEmailAsync(dto.Email);
-            if (user is null)
+            IUserEntity userEntity = await _userRepository.GetByEmailAsync(dto.Email);
+            if (userEntity is null)
                 throw new InvalidUserCredentialsException();
 
-            if (!_passwordService.CheckPassword(dto.Password, user.Password))
+            if (!_passwordService.CheckPassword(dto.Password, userEntity.Password))
                 throw new InvalidUserCredentialsException();
 
-            var token = _tokenService.CreateToken(user);
+            var token = _tokenService.CreateToken(userEntity);
             var refresh = _passwordService.GenerateSalt();
-            await _refreshTokenRepository.SaveTokenAsync(user.Id, refresh, DateTime.Now.AddHours(3));
+            await _refreshTokenRepository.SaveTokenAsync(userEntity.Id, refresh, DateTime.Now.AddHours(3));
             return new JwtTokenDto(token, refresh);
         }
         

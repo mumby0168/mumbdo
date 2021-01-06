@@ -1,4 +1,7 @@
-$HEADER$namespace $NAMESPACE$
+namespace Mumbdo.Shared.Urls
 {
-  public class $CLASS$ {$END$}
+    public static class TaskUrls
+    {
+        public const string CreateTaskUrl = "/api/tasks";
+    }
 }

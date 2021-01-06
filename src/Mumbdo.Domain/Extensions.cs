@@ -9,6 +9,8 @@ namespace Mumbdo.Domain
         {
             services.AddSingleton<IUserAggregate, UserAggregate>();
             services.AddSingleton<IItemGroupAggregate, ItemGroupAggregate>();
+            services.AddSingleton<IItemGroupAggregate, ItemGroupAggregate>();
+            services.AddSingleton<ITaskAggregate, TaskAggregate>();
             return services;
         }
         

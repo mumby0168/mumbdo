@@ -12,6 +12,8 @@ namespace Mumbdo.Application
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<ITokenService, TokenService>();
             services.AddTransient<ICurrentUserService, CurrentUserService>();
+            services.AddSingleton<IItemGroupService, ItemGroupService>();
+            services.AddSingleton<ITaskService, TaskService>();
             return services;
         }
         

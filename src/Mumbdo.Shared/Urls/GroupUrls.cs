@@ -1,4 +1,9 @@
-$HEADER$namespace $NAMESPACE$
+namespace Mumbdo.Shared.Urls
 {
-  public class $CLASS$ {$END$}
+    public static class GroupUrls
+    {
+        public const string CreateGroupUrl = "/api/groups";
+
+        public static string GetGroupsUrl(bool includeTasks) => $"/api/groups/{includeTasks}";
+    }
 }

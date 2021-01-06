@@ -5,6 +5,6 @@ namespace Mumbdo.Domain.Aggregates
 {
     public interface IItemGroupAggregate
     {
-        IItemGroup Create(Guid userId, string name, string description, string imageUri);
+        IItemGroupEntity Create(Guid userId, string name, string description, string imageUri);
     }
 }

@@ -23,14 +23,14 @@ namespace Mumbdo.Application.Jwt
             _settings = settings;
         }
         
-        public string CreateToken(IUser user)
+        public string CreateToken(IUserEntity userEntity)
         {
             var descriptor = new SecurityTokenDescriptor();
             var claims = new List<Claim>
             {
-                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new (ClaimTypes.Email, user.Email),
-                new (ClaimTypes.Role, user.Role)
+                new(ClaimTypes.NameIdentifier, userEntity.Id.ToString()),
+                new (ClaimTypes.Email, userEntity.Email),
+                new (ClaimTypes.Role, userEntity.Role)
             };
             var identity = new ClaimsIdentity(claims);
             descriptor.Subject = identity;

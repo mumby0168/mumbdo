@@ -7,8 +7,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Mumbdo.Application.Interfaces.Repositories;
+using Mumbdo.Application.Interfaces.Utilities;
 using Mumbdo.Infrastructure.Documents;
 using Mumbdo.Infrastructure.Repositories;
+using Mumbdo.Infrastructure.Utilities;
 
 namespace Mumbdo.Infrastructure
 {
@@ -23,12 +25,19 @@ namespace Mumbdo.Infrastructure
             services
                 .AddConvey()
                 .AddMongo(builder => builder.WithDatabase(DatabaseName)
-                    .WithConnectionString(environment.IsProduction() ? configuration[KeyVaultSecretKey] : LocalDevConnectionString))
+                    .WithConnectionString(environment.IsProduction()
+                        ? configuration[KeyVaultSecretKey]
+                        : LocalDevConnectionString))
                 .AddMongoRepository<UserDocument, Guid>("users")
-                .AddMongoRepository<RefreshTokenDocument, Guid>("refresh-tokens");
+                .AddMongoRepository<RefreshTokenDocument, Guid>("refresh-tokens")
+                .AddMongoRepository<ItemGroupDocument, Guid>("item-groups")
+                .AddMongoRepository<TaskDocument, Guid>("tasks");
             
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IRefreshTokenRepository, RefreshTokenRepository>();
+            services.AddTransient<IItemGroupRepository, ItemGroupRepository>();
+            services.AddTransient<ITaskRepository, TaskRepository>();
+            services.AddTransient<IEntityValidator, EntityValidator>();
             return services;
         }
 

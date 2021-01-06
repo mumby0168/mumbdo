@@ -5,11 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Mumbdo.Shared.Dtos;
 using Mumbdo.Web.Interfaces.Common;
+using Mumbdo.Web.Interfaces.Proxies;
 using Mumbdo.Web.Interfaces.Wrappers;
 
 namespace Mumbdo.Web.Common
 {
-    public class MumbdoHttpClient : IMumbdoHttpClient
+    public class MumbdoHttpClient 
     {
         private readonly HttpClient _httpClient;
         private readonly IJson _json;
@@ -20,6 +21,8 @@ namespace Mumbdo.Web.Common
             _httpClient = httpClient;
             _json = json;
         }
+        
+        
         
         public async Task<MumbdoErrorDto> ParseErrorAsync(HttpResponseMessage responseMessage)
         {
@@ -35,7 +38,12 @@ namespace Mumbdo.Web.Common
         }
         
         private StringContent JsonContent(string json) => new StringContent(json, Encoding.UTF8, ApplicationJson);
-        
+
+        public void SetBearerToken(string token)
+        {
+            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+        }
+
         public async Task<Tuple<HttpResponseMessage, R>> PostDataAsync<T, R>(string url, T data) where R : class
         {
             var json = await _json.SerializeAsync(data);
@@ -55,17 +63,22 @@ namespace Mumbdo.Web.Common
             return await _httpClient.PostAsync(url, JsonContent(json));
         }
 
-        public async Task<Tuple<HttpResponseMessage, JwtTokenDto>> GetAsync<T>(string url) where T : class
+        public async Task<Tuple<HttpResponseMessage, T>> GetAsync<T>(string url) where T : class
         {
             var result = await _httpClient.GetAsync(url);
             if (result.StatusCode == HttpStatusCode.OK)
             {
                 return
-                    new Tuple<HttpResponseMessage, JwtTokenDto>(result, await _json
-                        .DeserializeAsync<JwtTokenDto>(await result.Content.ReadAsStringAsync()));
+                    new Tuple<HttpResponseMessage, T>(result, await _json
+                        .DeserializeAsync<T>(await result.Content.ReadAsStringAsync()));
             }
 
-            return new Tuple<HttpResponseMessage, JwtTokenDto>(result, null);
+            return new Tuple<HttpResponseMessage, T>(result, null);
+        }
+
+        public Task<T> ProcessResponse<T>(HttpResponseMessage response, T dataResponse, ProxyBase proxy)
+        {
+            throw new NotImplementedException();
         }
 
         public void Dispose()

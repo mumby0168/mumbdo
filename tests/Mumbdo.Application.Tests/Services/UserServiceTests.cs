@@ -65,7 +65,7 @@ namespace Mumbdo.Application.Tests.Services
             //Arrange
             var sut = CreateSut();
             var pass = new Password("", "", "");
-            var user = new Mock<IUser>();
+            var user = new Mock<IUserEntity>();
             _mocker.GetMock<IPasswordService>()
                 .Setup(o => o.IsStrongPassword(Password))
                 .Returns(true);
@@ -100,7 +100,7 @@ namespace Mumbdo.Application.Tests.Services
         {
             //Arrange
             var sut = CreateSut();
-            var user = new Mock<IUser>();
+            var user = new Mock<IUserEntity>();
             _mocker.GetMock<IUserRepository>()
                 .Setup(o => o.GetByEmailAsync(Email))
                 .ReturnsAsync(user.Object);
@@ -118,7 +118,7 @@ namespace Mumbdo.Application.Tests.Services
         {
             //Arrange
             var sut = CreateSut();
-            var user = new Mock<IUser>();
+            var user = new Mock<IUserEntity>();
             _mocker.GetMock<IUserRepository>()
                 .Setup(o => o.GetByEmailAsync(Email))
                 .ReturnsAsync(user.Object);
@@ -153,7 +153,7 @@ namespace Mumbdo.Application.Tests.Services
             //Arrange
             var sut = CreateSut();
             var email = "test@test.com";
-            var user = new Mock<IUser>();
+            var user = new Mock<IUserEntity>();
             _mocker.GetMock<IUserRepository>()
                 .Setup(o => o.GetByEmailAsync(email))
                 .ReturnsAsync(user.Object);
@@ -169,7 +169,7 @@ namespace Mumbdo.Application.Tests.Services
             //Arrange
             var sut = CreateSut();
             var email = "test@test.com";
-            var user = new Mock<IUser>();
+            var user = new Mock<IUserEntity>();
             _mocker.GetMock<IUserRepository>()
                 .Setup(o => o.GetByEmailAsync(email))
                 .ReturnsAsync(user.Object);

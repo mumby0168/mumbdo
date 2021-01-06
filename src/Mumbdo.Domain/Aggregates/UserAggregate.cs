@@ -8,12 +8,12 @@ namespace Mumbdo.Domain.Aggregates
 {
     public class UserAggregate : IUserAggregate
     {
-        public IUser Create(string email, Password password)
+        public IUserEntity Create(string email, Password password)
         {
             if (!new EmailAddressAttribute().IsValid(email))
                 throw new EmailInvalidException(email);
                 
-            return new User(Guid.NewGuid(), email, password);
+            return new UserEntity(Guid.NewGuid(), email, password);
         }
     }
 }

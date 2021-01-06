@@ -1,215 +1,92 @@
-using System;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Sources;
 using Moq;
-using Moq.AutoMock;
 using Mumbdo.Shared.Dtos;
 using Mumbdo.Shared.Urls;
 using Mumbdo.Web.Authentication;
-using Mumbdo.Web.Common;
-using Mumbdo.Web.Interfaces.Authentication;
 using Mumbdo.Web.Interfaces.Common;
+using Mumbdo.Web.Interfaces.Proxies;
 using NUnit.Framework;
 using Shouldly;
 
 namespace Mumbdo.Web.Tests.Authentication
 {
-    public class AuthenticationProxyTests
+    public class AuthenticationProxyTests : ProxyBaseTest
     {
-        private AutoMocker _mocker;
         private const string Email = "test@test.com";
         private const string Password = "Password123";
 
-        [SetUp]
-        public void Setup()
-        {
-            _mocker = new AutoMocker();
-            _mocker.GetMock<IMumbdoHttpClient>()
-                .Setup(o => o.ConnectionRefusedErrorMessage)
-                .Returns(CommonNames.ConnectionRefusedError);
-        }
-
+        
         [Test]
-        public async Task SignInAsync_InvalidCredentials_ReturnsNullAndError()
+        public async Task RefreshAsync_Always_RefreshesToken()
         {
             //Arrange
             var sut = CreateSut();
-            var response = new HttpResponseMessage();
-            response.StatusCode = HttpStatusCode.Unauthorized;
-            _mocker.GetMock<IMumbdoHttpClient>()
-                .Setup(o =>
-                    o.PostDataAsync<SignInDto, JwtTokenDto>(AuthenticationUrls.SignIn,
-                        It.Is<SignInDto>(o => o.Email == Email && o.Password == Password)))
-                .ReturnsAsync(new Tuple<HttpResponseMessage, JwtTokenDto>(response, null));
-            
+            var response = new Mock<IHttpResponse<JwtTokenDto>>();
+            var tokenDto = new JwtTokenDto(Token, "");
+
+            Mocker.GetMock<IHttpClient>()
+                .Setup(o => o.
+                    GetAsync<JwtTokenDto>(AuthenticationUrls.Refresh(Token, Email)))
+                .ReturnsAsync(response.Object);
+
+            Mocker.GetMock<IProxyHelper>()
+                .Setup(o => o.ProcessResponseAsync(response.Object, sut))
+                .ReturnsAsync(tokenDto);
 
             //Act
-            var result = await sut.SignInAsync(Email, Password);
+            await sut.RefreshAsync(Token, Email);
 
             //Assert
-            result.ShouldBeNull();
-            sut.ErrorMessage.ShouldBe(CommonNames.ConnectionRefusedError);
+            Mocker.GetMock<IProxyHelper>()
+                .Verify(o => o.ProcessResponseAsync(response.Object, sut));
         }
 
         [Test]
-        public async Task SignInAsync_RefusedConnection_ReturnsNullAndError()
+        public async Task SignUpAsync_Always_SignsUp()
         {
             //Arrange
             var sut = CreateSut();
-            _mocker.GetMock<IMumbdoHttpClient>()
-                .Setup(o =>
-                    o.PostDataAsync<SignInDto, JwtTokenDto>(AuthenticationUrls.SignIn,It.IsAny<SignInDto>()))
-                .Throws(new Exception());
-            
+            var dto = new CreateUserDto(Email, Password);
+            var response = new Mock<IHttpResponse>();
+
+            Mocker.GetMock<IHttpClient>()
+                .Setup(o => o.PostAsync<CreateUserDto>(AuthenticationUrls.SignUp,
+                    It.Is<CreateUserDto>(dto => dto.Email == Email && dto.Password == Password)))
+                .ReturnsAsync(response.Object);
+
             //Act
-            var result = await sut.SignInAsync(Email, Password);
-            result.ShouldBeNull();
-            sut.ErrorMessage.ShouldBe(CommonNames.ConnectionRefusedError);
+            await sut.SignUpAsync(Email, Password);
+
+            //Assert
+            Mocker.GetMock<IProxyHelper>()
+                .Verify(o => o.ProcessResponseAsync(response.Object, sut));
         }
-        
-        
+
         [Test]
-        public async Task SignInAsync_ValidCredentials_ReturnsToken()
+        public async Task SignInAsync_Always_SignsIn()
         {
             //Arrange
             var sut = CreateSut();
-            var token = new JwtTokenDto("", "");
-            _mocker.GetMock<IMumbdoHttpClient>()
-                .Setup(o =>
-                    o.PostDataAsync<SignInDto, JwtTokenDto>(AuthenticationUrls.SignIn,
-                        It.Is<SignInDto>(o => o.Email == Email && o.Password == Password)))
-                .ReturnsAsync(new Tuple<HttpResponseMessage, JwtTokenDto>(null, token));
-            
+            var response = new Mock<IHttpResponse<JwtTokenDto>>();
+            var token = new JwtTokenDto(Token, "refresh");
+
+            Mocker.GetMock<IHttpClient>()
+                .Setup(o => o.PostAsync<SignInDto, JwtTokenDto>(AuthenticationUrls.SignIn,
+                    It.Is<SignInDto>(dto => dto.Email == Email && dto.Password == Password)))
+                .ReturnsAsync(response.Object);
+
+            Mocker.GetMock<IProxyHelper>()
+                .Setup(o => o.ProcessResponseAsync(response.Object, sut))
+                .ReturnsAsync(token);
+
             //Act
             var result = await sut.SignInAsync(Email, Password);
 
             //Assert
             result.ShouldBe(token);
         }
-        
-        [Test]
-        public async Task RefreshAsync_RefusedConnection_ReturnsNullAndError()
-        {
-            //Arrange
-            var email = "email";
-            var token = "token";
-            var sut = CreateSut();
-            _mocker.GetMock<IMumbdoHttpClient>()
-                .Setup(o =>
-                    o.GetAsync<JwtTokenDto>(AuthenticationUrls.Refresh(token, email)))
-                .Throws(new Exception());
-            
-            //Act
-            var result = await sut.RefreshAsync(token, email);
-            result.ShouldBeNull();
-            sut.ErrorMessage.ShouldBe(CommonNames.ConnectionRefusedError);
-        }
-        
-        [Test]
-        public async Task RefreshAsync_InvalidRefresh_ReturnsNullAndError()
-        {
-            //Arrange
-            var email = "email";
-            var token = "token";
-            var response = new HttpResponseMessage();
-            response.StatusCode = HttpStatusCode.Unauthorized;
-            var sut = CreateSut();
-            _mocker.GetMock<IMumbdoHttpClient>()
-                .Setup(o =>
-                    o.GetAsync<JwtTokenDto>(AuthenticationUrls.Refresh(token, email)))
-                .ReturnsAsync(new Tuple<HttpResponseMessage, JwtTokenDto>(response, null));
 
-            //Act
-            var result = await sut.RefreshAsync(token, email);
-            result.ShouldBeNull();
-            sut.ErrorMessage.ShouldBe(CommonNames.ConnectionRefusedError);
-        }
-        
-        [Test]
-        public async Task RefreshAsync_ValidToken_ReturnsNewToken()
-        {
-            //Arrange
-            var email = "email";
-            var token = "token";
-            var tokenResponse = new JwtTokenDto("", "");
-            var sut = CreateSut();
-            _mocker.GetMock<IMumbdoHttpClient>()
-                .Setup(o =>
-                    o.GetAsync<JwtTokenDto>(AuthenticationUrls.Refresh(token, email)))
-                .ReturnsAsync(new Tuple<HttpResponseMessage, JwtTokenDto>(null, tokenResponse));
 
-            //Act
-            var result = await sut.RefreshAsync(token, email);
-
-            //Assert
-            result.ShouldBe(tokenResponse);
-        }
-
-        [Test]
-        public async Task SignUpAsync_BadRequest_SetsErrorMessage()
-        {
-            //Arrange
-            var sut = CreateSut();
-            var response = new HttpResponseMessage();
-            response.StatusCode = HttpStatusCode.BadRequest;
-            var error = "test error message";
-            _mocker.GetMock<IMumbdoHttpClient>()
-                .Setup(o => o.ParseErrorAsync(response))
-                .ReturnsAsync(new MumbdoErrorDto("code", error));
-
-            _mocker.GetMock<IMumbdoHttpClient>()
-                .Setup(o => o.PostAsync(AuthenticationUrls.SignUp, It.IsAny<CreateUserDto>()))
-                .ReturnsAsync(response);
-
-            //Act
-            await sut.SignUpAsync("email", "pass");
-
-            //Assert
-            sut.ErrorMessage.ShouldBe(error);
-        }
-        
-        [Test]
-        public async Task SignUpAsync_NoConnection_SetsErrorMessage()
-        {
-            //Arrange
-            var sut = CreateSut();
-
-            _mocker.GetMock<IMumbdoHttpClient>()
-                .Setup(o => o.PostAsync(AuthenticationUrls.SignUp, It.IsAny<CreateUserDto>()))
-                .ThrowsAsync(new Exception());
-
-            //Act
-            await sut.SignUpAsync("email", "pass");
-
-            //Assert
-            sut.ErrorMessage.ShouldBe(CommonNames.ConnectionRefusedError);
-        }
-        
-        
-        [Test]
-        public async Task SignUpAsync_ValidDetails_NoException()
-        {
-            //Arrange
-            var sut = CreateSut();
-            var response = new HttpResponseMessage();
-            response.StatusCode = HttpStatusCode.OK;
-            var error = "test error message";
-
-            _mocker.GetMock<IMumbdoHttpClient>()
-                .Setup(o => o.PostAsync(AuthenticationUrls.SignUp, It.IsAny<CreateUserDto>()))
-                .ReturnsAsync(response);
-
-            //Act
-            //Assert
-            await sut.SignUpAsync("email", "pass");
-
-        }
-        
-
-        private IAuthenticationProxy CreateSut() => _mocker.CreateInstance<AuthenticationProxy>();
+        private AuthenticationProxy CreateSut() => Mocker.CreateInstance<AuthenticationProxy>();
     }
 }

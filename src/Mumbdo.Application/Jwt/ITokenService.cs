@@ -6,6 +6,6 @@ namespace Mumbdo.Application.Jwt
 {
     public interface ITokenService
     {
-        string CreateToken(IUser user);
+        string CreateToken(IUserEntity userEntity);
     }
 }

@@ -16,8 +16,8 @@ namespace Mumbdo.Web.Managers
 
         private List<TaskDto> _tasks = new List<TaskDto>()
         {
-            new ("Item 1", DateTime.Now.AddDays(-1), false, DateTime.Now.AddDays(3)),
-            new ("Item 1", DateTime.Now.AddDays(-1), true),
+            new (Guid.NewGuid(), "Item 1", DateTime.Now.AddDays(-1), false, null, DateTime.Now.AddDays(3)),
+            new (Guid.NewGuid(),"Item 1", DateTime.Now.AddDays(-1), true, null),
         };
 
         public ItemGroupManager()

@@ -1,4 +1,9 @@
-$HEADER$namespace $NAMESPACE$
+using System;
+using System.Net;
+
+namespace Mumbdo.Application.Exceptions
 {
-  public class $CLASS$ {$END$}
+    public class MumbdoNotAuthorisedException : Exception
+    {
+    }
 }

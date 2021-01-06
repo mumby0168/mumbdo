@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Mumbdo.Application.Exceptions;
 using Mumbdo.Domain.Exceptions;
 using Mumbdo.Shared;
 using Mumbdo.Shared.Dtos;
@@ -38,6 +39,11 @@ namespace Mumbdo.Api
                 _logger.LogError("Domain exception thrown", e);
                 context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
                 await context.Response.WriteAsJsonAsync(new MumbdoErrorDto(e.ErrorCode, e.Message));
+            }
+            catch (MumbdoNotAuthorisedException e)
+            {
+                _logger.LogError("Not authorised exception thrown", e);
+                context.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
             }
             catch (Exception e)
             {

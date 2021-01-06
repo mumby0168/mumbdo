@@ -1,4 +1,10 @@
-$HEADER$namespace $NAMESPACE$
+using System;
+using System.Threading.Tasks;
+
+namespace Mumbdo.Application.Interfaces.Utilities
 {
-  public interface $INTERFACE$ {$END$}
+    public interface IEntityValidator
+    {
+        Task<bool> IsGroupIdValidAsync(Guid groupId);
+    }
 }

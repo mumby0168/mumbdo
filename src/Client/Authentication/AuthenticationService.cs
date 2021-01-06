@@ -83,7 +83,8 @@ namespace Mumbdo.Web.Authentication
         public string Role => _userContext.SignedInUser?.Role;
         
         public Guid Id => _userContext.SignedInUser?.Id ?? Guid.Empty;
-        
+        public string Token => _userContext.SignedInUser?.Token;
+
         public event EventHandler AuthenticationStateUpdated;
     }
 }

@@ -19,9 +19,9 @@ namespace Mumbdo.Infrastructure.Repositories
         public Task<bool> IsEmailInUseAsync(string email) => _repository.ExistsAsync(d => d.Email == email);
 
 
-        public Task SaveAsync(IUser user) => _repository.AddAsync(user.AsDocument());
+        public Task SaveAsync(IUserEntity userEntity) => _repository.AddAsync(userEntity.AsDocument());
 
-        public async Task<IUser> GetByEmailAsync(string email)
+        public async Task<IUserEntity> GetByEmailAsync(string email)
         {
             var userDoc = await _repository.GetAsync(ud => ud.Email == email);
             return userDoc?.AsUser();

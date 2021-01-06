@@ -7,7 +7,7 @@ namespace Mumbdo.Domain.Entities
     {
         public const string User = "user";
     }
-    public interface IUser
+    public interface IUserEntity
     {
         Guid Id { get; }
         

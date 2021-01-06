@@ -7,7 +7,7 @@ namespace Mumbdo.Application.Interfaces.Repositories
     {
         Task<bool> IsEmailInUseAsync(string email);
 
-        Task SaveAsync(IUser user);
-        Task<IUser> GetByEmailAsync(string email);
+        Task SaveAsync(IUserEntity userEntity);
+        Task<IUserEntity> GetByEmailAsync(string email);
     }
 }

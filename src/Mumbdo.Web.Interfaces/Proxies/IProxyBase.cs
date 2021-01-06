@@ -1,7 +1,7 @@
 namespace Mumbdo.Web.Interfaces.Proxies
 {
-    public class IProxyBase
+    public interface IProxyBase
     {
-        
+        string ErrorMessage { get; }
     }
 }

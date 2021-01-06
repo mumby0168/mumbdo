@@ -1,4 +1,6 @@
-$HEADER$namespace $NAMESPACE$
+using System;
+
+namespace Mumbdo.Shared.Dtos
 {
-  public class $CLASS$ {$END$}
+    public record CreateTaskDto(string Name, Guid? GroupId, DateTime? Deadline);
 }

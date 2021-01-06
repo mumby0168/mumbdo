@@ -1,110 +1,47 @@
 using System;
+using System.Collections.Specialized;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Mumbdo.Shared;
 using Mumbdo.Shared.Dtos;
 using Mumbdo.Shared.Urls;
 using Mumbdo.Web.Interfaces.Authentication;
 using Mumbdo.Web.Interfaces.Common;
+using Mumbdo.Web.Interfaces.Proxies;
+using Mumbdo.Web.Interfaces.Wrappers;
 
 namespace Mumbdo.Web.Authentication
 {
-    public class AuthenticationProxy : IAuthenticationProxy
+    public class AuthenticationProxy : ProxyBase, IAuthenticationProxy
     {
-        private readonly IMumbdoHttpClient _httpClient;
+        private readonly IHttpClient _httpClient;
+        private readonly IProxyHelper _proxyHelper;
 
-        private string _errorMessage = string.Empty;
 
-        public AuthenticationProxy(IMumbdoHttpClient httpClient)
+        public AuthenticationProxy(IHttpClient httpClient, IJson json, IProxyHelper proxyHelper) : base(json)
         {
             _httpClient = httpClient;
+            _proxyHelper = proxyHelper;
         }
-
-        public string ErrorMessage
-        {
-            get
-            {
-                string error = _errorMessage;
-                _errorMessage = string.Empty;
-                return error;
-            }
-        }
-
+        
         public async Task<JwtTokenDto> RefreshAsync(string refreshToken, string email)
         {
-            try
-            {
-                var (result, token) = await _httpClient.GetAsync<JwtTokenDto>(AuthenticationUrls.Refresh(refreshToken, email));
-                if (token is not null)
-                    return token;
-                if (result.StatusCode == HttpStatusCode.Unauthorized)
-                    await ProcessErrorAsync(result);
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
-
-            _errorMessage = _httpClient.ConnectionRefusedErrorMessage;
-            return null;
+            var result = await _httpClient.GetAsync<JwtTokenDto>(AuthenticationUrls.Refresh(refreshToken, email));
+            return await _proxyHelper.ProcessResponseAsync(result, this);
         }
 
         public async Task<JwtTokenDto> SignInAsync(string username, string password)
         {
-            try
-            {
-                var (result, token) =
-                    await _httpClient.PostDataAsync<SignInDto, JwtTokenDto>(AuthenticationUrls.SignIn,
-                        new SignInDto(username, password));
-                
-                if (token is not null)
-                    return token;
-
-                if (result.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    await ProcessErrorAsync(result);
-                    return null;
-                }
-                    
-            }
-            catch (Exception)
-            {
-                /* ignored*/
-            }
-
-            _errorMessage = _httpClient.ConnectionRefusedErrorMessage;
-            return null;
+            var result = await _httpClient.PostAsync<SignInDto, JwtTokenDto>(AuthenticationUrls.SignIn,new SignInDto(username, password));
+            return await _proxyHelper.ProcessResponseAsync(result, this);
         }
 
         public async Task SignUpAsync(string email, string password)
         {
-            try
-            {
-                var result = await _httpClient.PostAsync(AuthenticationUrls.SignUp, new CreateUserDto(email, password));
-                
-                if(result.StatusCode == HttpStatusCode.OK)
-                    return;
-                
-                if (result.StatusCode == HttpStatusCode.BadRequest)
-                {
-                    await ProcessErrorAsync(result);
-                    return;
-                }
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
-
-            _errorMessage = _httpClient.ConnectionRefusedErrorMessage;
+            var result = await _httpClient.PostAsync(AuthenticationUrls.SignUp, new CreateUserDto(email, password));
+            await _proxyHelper.ProcessResponseAsync(result, this);
         }
-
-        private async Task ProcessErrorAsync(HttpResponseMessage responseMessage)
-        {
-            var error = await _httpClient.ParseErrorAsync(responseMessage);
-            Console.WriteLine($"Signing user in error {error?.Code ?? "no_code"}");
-            _errorMessage = error?.Message ?? _httpClient.ConnectionRefusedErrorMessage;
-            Console.WriteLine($"Error: {_errorMessage}");
-        }
+        
     }
 }

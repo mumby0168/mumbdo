@@ -2,7 +2,7 @@ using System;
 
 namespace Mumbdo.Domain.Entities
 {
-    public interface IItemGroup
+    public interface IItemGroupEntity
     {
         Guid Id { get; }
         

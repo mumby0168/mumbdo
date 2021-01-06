@@ -15,9 +15,11 @@ using Mumbdo.Web.Common;
 using Mumbdo.Web.Interfaces.Authentication;
 using Mumbdo.Web.Interfaces.Common;
 using Mumbdo.Web.Interfaces.Managers;
+using Mumbdo.Web.Interfaces.Proxies;
 using Mumbdo.Web.Interfaces.Settings;
 using Mumbdo.Web.Interfaces.Wrappers;
 using Mumbdo.Web.Managers;
+using Mumbdo.Web.Proxies;
 using Mumbdo.Web.Wrappers;
 
 namespace Mumbdo.Web
@@ -38,10 +40,13 @@ namespace Mumbdo.Web
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
             builder.Services.AddSingleton<ILocalStorageManager, LocalStorageManager>();
             builder.Services.AddSingleton<IJson, Json>();
-            builder.Services.AddScoped<IMumbdoHttpClient, MumbdoHttpClient>();
-            builder.Services.AddScoped<IAuthenticationProxy, AuthenticationProxy>();
+            builder.Services.AddScoped<IHttpClient, EnhancedHttpClient>();
             builder.Services.AddSingleton<ITokenManager, TokenManager>();
             builder.Services.AddSingleton<IUserContext, UserContext>();
+            builder.Services.AddTransient<IProxyHelper, ProxyHelper>();
+            builder.Services.AddScoped<IAuthenticationProxy, AuthenticationProxy>();
+            builder.Services.AddScoped<IGroupProxy, GroupProxy>();
+            builder.Services.AddScoped<ITaskProxy, TaskProxy>();
 
 
             var host =  builder.Build();

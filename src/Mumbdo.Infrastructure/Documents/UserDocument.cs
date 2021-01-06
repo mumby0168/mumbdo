@@ -27,17 +27,17 @@ namespace Mumbdo.Infrastructure.Documents
             
         }
 
-        public IUser AsUser()
+        public IUserEntity AsUser()
         {
-            return new User(Id, Email, Mumbdo.Domain.ValueObjects.Password.UnPack(Password));
+            return new UserEntity(Id, Email, Mumbdo.Domain.ValueObjects.Password.UnPack(Password));
         }
     }
 
     public static class UserDocumentExtensions
     {
-        public static UserDocument AsDocument(this IUser user)
+        public static UserDocument AsDocument(this IUserEntity userEntity)
         {
-            return new UserDocument(user.Id, user.Email, user.Password.Pack(), user.Role);
+            return new UserDocument(userEntity.Id, userEntity.Email, userEntity.Password.Pack(), userEntity.Role);
         }
     }
 }

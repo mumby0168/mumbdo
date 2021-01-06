@@ -1,7 +1,20 @@
+using System;
+
 namespace Mumbdo.Domain.Entities
 {
-    public class ITask
+    public interface ITaskEntity
     {
+        Guid Id { get; }
         
+        DateTime Created { get; }
+        
+        bool IsComplete { get; }
+        
+        DateTime? Deadline { get; }
+        
+        Guid UserId { get; }
+        
+        Guid? GroupId { get; }
+        string Name { get;  }
     }
 }

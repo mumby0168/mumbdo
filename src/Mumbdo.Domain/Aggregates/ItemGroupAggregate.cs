@@ -6,7 +6,7 @@ namespace Mumbdo.Domain.Aggregates
 {
     public class ItemGroupAggregate : IItemGroupAggregate
     {
-        public IItemGroup Create(Guid userId, string name, string description, string imageUri)
+        public IItemGroupEntity Create(Guid userId, string name, string description, string imageUri)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -18,7 +18,7 @@ namespace Mumbdo.Domain.Aggregates
                 throw new FieldRequiredException("Image URL");
             }
             
-            return new ItemGroup(Guid.NewGuid(), userId, name, description, imageUri);
+            return new ItemGroupEntity(Guid.NewGuid(), userId, name, description, imageUri);
         }
     }
 }

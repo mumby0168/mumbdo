@@ -20,6 +20,8 @@ namespace Mumbdo.Web.Interfaces.Authentication
         string Role { get; }
         
         Guid Id { get; }
+        
+        string Token { get; }
 
         event EventHandler AuthenticationStateUpdated;
     }

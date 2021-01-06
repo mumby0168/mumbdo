@@ -3,14 +3,14 @@ using Mumbdo.Domain.ValueObjects;
 
 namespace Mumbdo.Domain.Entities
 {
-    public class User : IUser
+    public class UserEntity : IUserEntity
     {
         public Guid Id { get; }
         public string Email { get; }
         public Password Password { get; }
         public string Role { get; }
 
-        public User(Guid id, string email, Password password)
+        public UserEntity(Guid id, string email, Password password)
         {
             Id = id;
             Email = email;
@@ -18,6 +18,6 @@ namespace Mumbdo.Domain.Entities
             Role = Roles.User;
         }
         
-        private User(){}
+        private UserEntity(){}
     }
 }

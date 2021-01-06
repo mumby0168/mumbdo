@@ -2,7 +2,7 @@ using System;
 
 namespace Mumbdo.Domain.Entities
 {
-    public class ItemGroup : IItemGroup
+    public class ItemGroupEntity : IItemGroupEntity
     {
         public Guid Id { get; }
         public Guid UserId { get; }
@@ -10,7 +10,7 @@ namespace Mumbdo.Domain.Entities
         public string Description { get; }
         public string ImageUri { get; }
 
-        public ItemGroup(Guid id, Guid userId, string name, string description, string imageUri)
+        public ItemGroupEntity(Guid id, Guid userId, string name, string description, string imageUri)
         {
             Id = id;
             UserId = userId;

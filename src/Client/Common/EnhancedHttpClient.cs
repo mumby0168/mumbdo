@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ namespace Mumbdo.Web.Common
     {
         private readonly IJson _json;
         private readonly HttpClient _client;
+        private const string AuthorisationHeader = "Authorization";
 
         public EnhancedHttpClient(IJson json, HttpClient client)
         {
@@ -168,11 +170,29 @@ namespace Mumbdo.Web.Common
         public void AddHeader(string key, string value) 
             => _client.DefaultRequestHeaders.Add(key, value);
 
+        private string Bearer(string token) => $"Bearer {token}";
+
         public void AddAuthorizationHeader(string value) 
             => AddHeader("Authorization", value);
 
-        public void AddBearerToken(string token) 
-            => AddAuthorizationHeader(token);
+        public void AddBearerToken(string token)
+        {
+            if (_client.DefaultRequestHeaders.TryGetValues(AuthorisationHeader, out var values))
+            {
+                var value = values.FirstOrDefault();
+                if (value is not null)
+                {
+                    if(value == token)
+                        return;
+                    _client.DefaultRequestHeaders.Remove(AuthorisationHeader);
+                    _client.DefaultRequestHeaders.Add(AuthorisationHeader, Bearer(token));
+                }
+            }
+            else
+            {
+                _client.DefaultRequestHeaders.Add(AuthorisationHeader, Bearer(token));
+            }
+        } 
 
         public void Dispose()
         {

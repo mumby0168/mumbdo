@@ -6,6 +6,6 @@ namespace Mumbdo.Shared.Urls
 
         public const string SignUp = "/api/users/signup";
 
-        public static string Refresh(string token, string email) => $"/api/refresh?token={token}&email={email}";
+        public static string Refresh(string token, string email) => $"/api/users/refresh?token={token}&email={email}";
     }
 }

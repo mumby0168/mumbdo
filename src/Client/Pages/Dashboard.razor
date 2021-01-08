@@ -14,9 +14,18 @@
                     </MudCardContent>
                 </MudCard>
             </MudItem>
-            @foreach (var group in Groups)
+            @if (Groups != null)
             {
-                <ItemGroupCard ItemGroup="@group" />
+                @foreach (var group in Groups)
+                {
+                    <ItemGroupCard ItemGroup="@group" />
+                }    
+            }
+            else
+            {
+                <MudItem xs="12">
+                    <MudText>No Groups</MudText>    
+                </MudItem>
             }
         </MudGrid>
     </Authenticated>
@@ -30,11 +39,11 @@
 
 
 @code {
-    List<ItemGroupDto> Groups { get; set; }
+    IEnumerable<ItemGroupDto> Groups { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        Groups = (await ItemGroupManager.GetAllGroupsAsync()).ToList();
+        Groups = await ItemGroupManager.GetAllGroupsAsync();
         await base.OnInitializedAsync();
     }
 

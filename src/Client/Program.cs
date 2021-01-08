@@ -36,7 +36,7 @@ namespace Mumbdo.Web
             builder.Services.AddMudBlazorSnackbar();
             builder.Services.AddMudBlazorResizeListener();
             builder.Services.AddAuthorizationCore();
-            builder.Services.AddSingleton<IItemGroupManager, ItemGroupManager>();
+            builder.Services.AddScoped<IItemGroupManager, ItemGroupManager>();
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
             builder.Services.AddSingleton<ILocalStorageManager, LocalStorageManager>();
             builder.Services.AddSingleton<IJson, Json>();

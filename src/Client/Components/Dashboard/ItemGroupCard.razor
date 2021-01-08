@@ -21,10 +21,10 @@
             <MudText Typo="Typo.body2">@ItemGroup.Description</MudText>
         </MudCardContent>
         <MudCardActions>
-            <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Add">Add</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.AddTask">Add</MudButton>
             <div style="margin-right: 0.5rem"></div>  
             <MudBadge Content="@TaskCount" Color="Color.Secondary">
-                <MudButton OnClick="@ViewList" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Article">View</MudButton>
+                <MudButton OnClick="@ViewList" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.PlaylistAddCheck">View</MudButton>
             </MudBadge>
         </MudCardActions>
     </MudCard>

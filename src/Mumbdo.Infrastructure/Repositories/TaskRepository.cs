@@ -18,7 +18,7 @@ namespace Mumbdo.Infrastructure.Repositories
             _repository = repository;
         }
         
-        public async Task<IEnumerable<ITaskEntity>> GetUnCompleteInGroupAsync(Guid groupId, bool complete = true)
+        public async Task<IEnumerable<ITaskEntity>> GetTasksInGroupAsync(Guid groupId, bool complete = false)
         {
             var results = await _repository.FindAsync(t => t.GroupId == groupId && t.IsComplete == complete);
             return results.Select(task => task.AsDomain());

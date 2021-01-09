@@ -28,36 +28,27 @@
     }   
 
 }
-<MudCard Elevation="5">
-    <MudCardMedia Image="@Group.Image"></MudCardMedia>
-    <MudCardContent>
-        <MudText Typo="Typo.h2">@Group.Name</MudText>
-        <MudText Typo="Typo.body1">@Group.Description</MudText>
-    </MudCardContent>
-</MudCard>
 
-<br/>
+@if (Group is not null)
+{
+    <MudCard Elevation="5">
+        <MudCardMedia Image="@Group.Image"></MudCardMedia>
+        <MudCardContent>
+            <MudText Typo="Typo.h2">@Group.Name</MudText>
+            <MudText Typo="Typo.body1">@Group.Description</MudText>
+        </MudCardContent>
+    </MudCard>
 
-<MudTable Elevation="5" Dense="true" Items="Group.Tasks" >
-    <HeaderContent>
-        <MudTh>Name</MudTh>
-        <MudTh>Created</MudTh>
-        <MudTd>Deadline</MudTd>
-        <MudTh>Actions</MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd DataLabel="Created">@context.Created.ToShortTimeString()</MudTd>
-        <MudTd DataLabel="Deadline">@(context.Deadline?.ToShortDateString() ?? "n/a")</MudTd>
-        <MudTd>
-            @if (context.IsComplete)
-            {
-                <MudFab Icon="@Icons.Material.Delete" Variant="Variant.Filled" Color="Color.Error" Size="Size.Small"></MudFab>
-            }
-            else
-            {
-                <MudFab Icon="@Icons.Material.Check" Variant="Variant.Filled" Color="Color.Success" Size="Size.Small"></MudFab>
-            }
-        </MudTd>
-    </RowTemplate>
-</MudTable>
+    <br/>
+
+    <TaskListTable Tasks="@Group.Tasks"></TaskListTable>
+}
+else
+{
+    <MudText Color="Color.Error" Typo="Typo.h2">
+        An error has occured        
+    </MudText>
+}
+
+
+

@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Mumbdo.Application.Exceptions;
 using Mumbdo.Application.Interfaces.Repositories;
 using Mumbdo.Application.Jwt;
 using Mumbdo.Domain.Aggregates;
+using Mumbdo.Domain.Entities;
 using Mumbdo.Shared.Dtos;
 
 namespace Mumbdo.Application.Services
@@ -44,11 +47,11 @@ namespace Mumbdo.Application.Services
                 
                 if (includeTasks)
                 {
-                    var tasks = await _taskRepository.GetUnCompleteInGroupAsync(group.Id);
+                    var tasks = await _taskRepository.GetTasksInGroupAsync(group.Id);
 
                     foreach (var task in tasks)
                     {
-                        taskDtos.Add(new(task.Id, task.Name, task.Created, task.IsComplete, null, task.Deadline));
+                        taskDtos.Add(new(task.Id, task.Name, task.Created, task.IsComplete, task.GroupId, task.Deadline));
                     }    
                 }
                 
@@ -56,6 +59,31 @@ namespace Mumbdo.Application.Services
             }
 
             return groupDtos;
+        }
+
+        public async Task<ItemGroupDto> GetAsync(Guid groupId, bool includeTasks = true)
+        {
+            var userId = _currentUserService.GetCurrentUser().Id;
+            
+            var group = await _itemGroupRepository.GetAsync(userId, groupId);
+            
+            if (group is null)
+                   throw new GroupIdInvalidException();
+
+            var taskDtos = new List<TaskDto>();
+
+            if (includeTasks)
+            {
+                var tasks = await _taskRepository.GetTasksInGroupAsync(groupId);
+                foreach (var taskEntity in tasks)
+                {
+                    taskDtos.Add(new TaskDto(taskEntity.Id, taskEntity.Name,taskEntity.Created, taskEntity.IsComplete, taskEntity.GroupId));
+                }
+            }
+
+            var groupDto = new ItemGroupDto(group.Id, group.Name, group.Description, group.ImageUri, taskDtos);
+
+            return groupDto;
         }
     }
 }

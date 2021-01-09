@@ -31,5 +31,10 @@ namespace Mumbdo.Infrastructure.Repositories
         }
 
         public Task<bool> ExistsAsync(Guid groupId) => _repository.ExistsAsync(gi => gi.Id == groupId);
+        public async Task<IItemGroupEntity> GetAsync(Guid userId, Guid groupId)
+        {
+            var result = await _repository.GetAsync(d => d.Id == groupId && d.UserId == userId);
+            return result?.AsDomain();
+        }
     }
 }

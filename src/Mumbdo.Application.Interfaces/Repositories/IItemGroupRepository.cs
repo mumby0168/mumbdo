@@ -11,5 +11,6 @@ namespace Mumbdo.Application.Interfaces.Repositories
 
         Task<IEnumerable<IItemGroupEntity>> GetGroupsForUserAsync(Guid userId);
         Task<bool> ExistsAsync(Guid groupId);
+        Task<IItemGroupEntity> GetAsync(Guid userId, Guid groupId);
     }
-}
+}   

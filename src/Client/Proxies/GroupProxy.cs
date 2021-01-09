@@ -34,7 +34,7 @@ namespace Mumbdo.Web.Proxies
         public async Task<ItemGroupDto> GetAsync(Guid id, bool includeTasks = false)
         {
             await AuthoriseAsync(_client, _authenticationService);
-            var response = await _client.GetAsync<ItemGroupDto>(GroupUrls.GetGroupsUrl(includeTasks));
+            var response = await _client.GetAsync<ItemGroupDto>(GroupUrls.GetGroupUrl(id, includeTasks));
             return await _proxyHelper.ProcessResponseAsync(response, this);
         }
 

@@ -1,0 +1,33 @@
+
+@code {
+
+    [Parameter]
+    public IEnumerable<TaskDto> Tasks { get; set; }
+
+}
+
+<MudTable Elevation="5" Dense="true" Items="Tasks" >
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>Created</MudTh>
+        <MudTd>Deadline</MudTd>
+        <MudTh>Actions</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Created">@context.Created.ToShortTimeString()</MudTd>
+        <MudTd DataLabel="Deadline">@(context.Deadline?.ToShortDateString() ?? "n/a")</MudTd>
+        <MudTd>
+            @if (context.IsComplete)
+            {
+                <MudFab Icon="@Icons.Material.Delete" Variant="Variant.Filled" Color="Color.Error" Size="Size.Small"></MudFab>
+            }
+            else
+            {
+                <MudFab Icon="@Icons.Material.Check" Variant="Variant.Filled" Color="Color.Success" Size="Size.Small"></MudFab>
+            }
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+

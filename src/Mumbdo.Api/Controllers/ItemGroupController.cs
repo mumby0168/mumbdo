@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +33,13 @@ namespace Mumbdo.Api.Controllers
         {
             var groups = await _itemGroupService.GetAllForUserAsync(includeTasks);
             return Ok(groups);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetGroupAsync([FromQuery] Guid groupId, [FromQuery] bool includeTasks)
+        {
+            ItemGroupDto groupDto = await _itemGroupService.GetAsync(groupId, includeTasks);
+            return Ok(groupDto);
         }
     }
 }

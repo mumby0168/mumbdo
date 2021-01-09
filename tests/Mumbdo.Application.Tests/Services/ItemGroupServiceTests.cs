@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using Moq.AutoMock;
+using Mumbdo.Application.Exceptions;
 using Mumbdo.Application.Interfaces.Repositories;
 using Mumbdo.Application.Jwt;
 using Mumbdo.Application.Services;
@@ -136,7 +137,7 @@ namespace Mumbdo.Application.Tests.Services
                 .ReturnsAsync(groups);
 
             _mocker.GetMock<ITaskRepository>()
-                .Setup(o => o.GetUnCompleteInGroupAsync(group.Object.Id, true))
+                .Setup(o => o.GetTasksInGroupAsync(group.Object.Id, false))
                 .ReturnsAsync(new List<ITaskEntity> {task.Object});
             
             //Act
@@ -151,6 +152,99 @@ namespace Mumbdo.Application.Tests.Services
             taskDto.Name.ShouldBe(name);
             taskDto.Deadline.ShouldBeNull();
             taskDto.IsComplete.ShouldBe(isComplete);
+        }
+
+        [Test]
+        public void GetAsync_InvalidId_Throws()
+        {
+            //Arrange
+            var sut = CreateSut();
+            SetupCurrentUser();
+
+            //Act
+            //Assert
+            Assert.ThrowsAsync<GroupIdInvalidException>(() => sut.GetAsync(Guid.NewGuid()));
+        }
+
+        [Test]
+        public async Task GetAsync_GroupNoTasks_Returns()
+        {
+            //Arrange
+            var sut = CreateSut();
+            
+            var group = new Mock<IItemGroupEntity>();
+            SetupCurrentUser();
+            
+            var gId = Guid.NewGuid();
+            var name = "name";
+            var description = "description";
+            var userId = _userId;
+            var image = "image";
+            group.SetupGet(o => o.Name).Returns(name);
+            group.SetupGet(o => o.Description).Returns(description);
+            group.SetupGet(o => o.UserId).Returns(userId);
+            group.SetupGet(o => o.Id).Returns(gId);
+            group.SetupGet(o => o.ImageUri).Returns(image);
+
+            _mocker.GetMock<IItemGroupRepository>()
+                .Setup(o => o.GetAsync(_userId, gId))
+                .ReturnsAsync(group.Object);
+            
+            //Act
+            var result = await sut.GetAsync(gId, false);
+
+            //Assert
+            result.Tasks.ShouldBeEmpty();
+            result.Id.ShouldBe(gId);
+            result.Name.ShouldBe(name);
+            result.Description.ShouldBe(description);
+            result.Image.ShouldBe(image);
+        }
+
+        public async Task GetAsync_GroupWithTask_Returns()
+        {
+            //Arrange
+            var sut = CreateSut();
+            var gId = Guid.NewGuid();
+            var group = new Mock<IItemGroupEntity>();
+            group.SetupGet(o => o.Id).Returns(gId);
+            var name = "name";
+            var userId = _userId;
+            var id = Guid.NewGuid();
+            var isComplete = true;
+            DateTime? deadline = null;
+            DateTime created = DateTime.Now;
+            var task = new Mock<ITaskEntity>();
+            task.SetupGet(o => o.Id).Returns(id);
+            task.SetupGet(o => o.Name).Returns(name);
+            task.SetupGet(o => o.UserId).Returns(userId);
+            task.SetupGet(o => o.GroupId).Returns(gId);
+            task.SetupGet(o => o.Created).Returns(created);
+            task.SetupGet(o => o.Deadline).Returns(deadline);
+            task.SetupGet(o => o.IsComplete).Returns(isComplete);
+            var tasks = new List<ITaskEntity>() {task.Object};
+            
+            _mocker.GetMock<IItemGroupRepository>()
+                .Setup(o => o.GetAsync(_userId, gId))
+                .ReturnsAsync(group.Object);
+
+            _mocker.GetMock<ITaskRepository>()
+                .Setup(o => o.GetTasksInGroupAsync(gId, false))
+                .ReturnsAsync(tasks);
+
+
+            //Act
+            var result = await  sut.GetAsync(gId, true);
+
+            //Assert
+            result.Tasks.Count().ShouldBe(1);
+            var taskDto = result.Tasks.First();
+            taskDto.Created.ShouldBe(created);
+            taskDto.Id.ShouldBe(id);
+            taskDto.Name.ShouldBe(name);
+            taskDto.Deadline.ShouldBeNull();
+            taskDto.IsComplete.ShouldBe(isComplete);
+            
         }
 
         private void SetupCurrentUser()

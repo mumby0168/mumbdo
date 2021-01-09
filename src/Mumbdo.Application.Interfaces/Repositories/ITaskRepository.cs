@@ -7,7 +7,7 @@ namespace Mumbdo.Application.Interfaces.Repositories
 {
     public interface ITaskRepository
     {
-        Task<IEnumerable<ITaskEntity>> GetUnCompleteInGroupAsync(Guid groupId, bool complete = true);
+        Task<IEnumerable<ITaskEntity>> GetTasksInGroupAsync(Guid groupId, bool complete = false);
 
         Task CreateAsync(ITaskEntity task);
         

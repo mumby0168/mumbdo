@@ -8,6 +8,6 @@ namespace Mumbdo.Application.Exceptions
         public override string ErrorCode => ItemGroupCodes.InvalidGroupId;
         public override HttpStatusCode StatusCode => HttpStatusCode.BadRequest;
 
-        public GroupIdInvalidException() : base("The task cannot be added to the group as the group cannot be found") { } 
+        public GroupIdInvalidException() : base("The group cannot be found") { } 
     }
 }

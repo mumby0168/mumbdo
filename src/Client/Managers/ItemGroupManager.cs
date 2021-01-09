@@ -52,14 +52,17 @@ namespace Mumbdo.Web.Managers
             return error != string.Empty ? error : string.Empty;
         }
 
-        public Task<ItemGroupDto> GetAsync(Guid id)
+        public async Task<ItemGroupDto> GetAsync(Guid id)
         {
-            var item = _itemGroups.First();
-            if (item is not null && !item.Tasks.Any())
+            var group =  await _groupProxy.GetAsync(id, true);
+            var error = _groupProxy.ErrorMessage;
+            if (error != string.Empty)
             {
-                item.Tasks.AddRange(_tasks);
+                Console.WriteLine($@"Error: {error}");
+                return null;
             }
-            return Task.FromResult(item);
+
+            return group;
         }
     }
 }

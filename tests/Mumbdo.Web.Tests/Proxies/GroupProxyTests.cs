@@ -60,6 +60,30 @@ namespace Mumbdo.Web.Tests.Proxies
             Mocker.GetMock<IProxyHelper>()
                 .Verify(o => o.ProcessResponseAsync(response.Object, sut));
         }
+
+        [Test]
+        public async Task GetAsync_Always_Gets()
+        {
+            //Arrange
+            var sut = CreateSut();
+            var id = Guid.NewGuid();
+            var response = new Mock<IHttpResponse<ItemGroupDto>>();
+            Mocker.GetMock<IHttpClient>()
+                .Setup(o => o.GetAsync<ItemGroupDto>(GroupUrls.GetGroupUrl(id, true)))
+                .ReturnsAsync(response.Object);
+
+            var groupDto = new ItemGroupDto(id, "", "", "", new List<TaskDto>());
+
+            Mocker.GetMock<IProxyHelper>()
+                .Setup(o => o.ProcessResponseAsync(response.Object, sut))
+                .ReturnsAsync(groupDto);
+
+            //Act
+            var result = await sut.GetAsync(id, true);
+
+            //Assert
+            result.Id.ShouldBe(id);
+        }
         
         private GroupProxy CreateSut() => Mocker.CreateInstance<GroupProxy>();
     }

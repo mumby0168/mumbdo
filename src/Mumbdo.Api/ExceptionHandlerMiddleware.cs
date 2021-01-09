@@ -30,13 +30,13 @@ namespace Mumbdo.Api
             }
             catch (ApplicationException e)
             {
-                _logger.LogError("Application exception thrown", e);
+                _logger.LogError($"Application exception thrown, message: {e.Message}", e);
                 context.Response.StatusCode = (int) e.StatusCode;
                 await context.Response.WriteAsJsonAsync(new MumbdoErrorDto(e.ErrorCode, e.Message));
             }
             catch (DomainException e)
             {
-                _logger.LogError("Domain exception thrown", e);
+                _logger.LogError($"Domain exception thrown, message: {e.Message}", e);
                 context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
                 await context.Response.WriteAsJsonAsync(new MumbdoErrorDto(e.ErrorCode, e.Message));
             }

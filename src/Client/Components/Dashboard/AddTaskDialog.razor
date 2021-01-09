@@ -1,16 +1,128 @@
+@inherits MudFormBase
+@inject IGroupProxy GroupProxy
+@inject ITaskProxy TaskProxy
+
 <MudDialog>
     <DialogContent>
-            Add Task Dialog
-        </DialogContent>
-        <DialogActions>
-            <MudButton OnClick="Cancel">Cancel</MudButton>
-            <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
-        </DialogActions>
+        <MudForm @ref="Form" @bind-IsValid="@IsFormValid">
+            <MudTextField Variant="Variant.Filled" Label="Name" @bind-Value="Name" Required="true"></MudTextField>
+            <br/>
+            <MudSelect Label="Group" Variant="Variant.Filled" @bind-Value="@GroupId">
+                <MudSelectItem Value="@((Guid?) Guid.Empty)">None</MudSelectItem>
+                @foreach (var group in Groups)
+                {
+                    <MudSelectItem Value="(Guid?) group.Id">@group.Name</MudSelectItem>
+                }
+            </MudSelect>
+            <br/>
+            @if (!SetDeadline)
+            {
+                <MudButton OnClick="() => ToggleSetDeadline(true)">Set Deadline</MudButton>
+            }
+            @if (SetDeadline)
+            {
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Set a deadline</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudGrid>
+                            <MudItem xs="6">
+                                <div align="left">
+                                    <MudDatePicker @bind-Date="@DeadlineDate" MinDate="DateTime.Now" Label="Date" Rounded="true" Color="Color.Secondary"></MudDatePicker>
+                                </div>
+                            </MudItem>
+                            <MudItem xs="6">
+                                <div align="right">
+                                    <MudTimePicker @bind-Time="@DeadlineTime" Label="Time"></MudTimePicker>
+                                </div>
+                            </MudItem>
+                        </MudGrid>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Color="Color.Error" OnClick="() => ToggleSetDeadline(false)">Cancel</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            }
+        </MudForm>
+        
+        <MudText Color="Color.Error">@ErrorMessage</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
 </MudDialog>
 
 @code {
+
+    void ToggleSetDeadline(bool set)
+    {
+        if (set == SetDeadline) return;
+        if (set)
+        {
+            DeadlineDate = DateTime.Now.AddDays(1);
+            DeadlineTime = DateTime.Now.AddHours(4).TimeOfDay;
+        }
+        else
+        {
+            DeadlineDate = null;
+            DeadlineTime = null;
+        }
+        SetDeadline = set;  
+    }
+
+    void ProcessDeadline()
+    {
+        if (SetDeadline)
+        {
+            var date = DeadlineDate.Value;
+            var time = DeadlineTime.Value;
+            DeadlineDate = new DateTime(date.Year, date.Month, date.Day, time.Hours, time.Minutes, time.Seconds);
+        }
+    }
+
+    bool SetDeadline = false;
+
+    Guid? GroupId = Guid.Empty;
+
+    string Name = string.Empty;
+
+    DateTime? DeadlineDate = null;
+
+    TimeSpan? DeadlineTime = null;
+    
+    DateTime? Min = DateTime.Now;
+
+    IEnumerable<ItemGroupDto> Groups = new List<ItemGroupDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Groups = await GroupProxy.GetGroupsAsync();
+        await base.OnInitializedAsync();
+    }
+
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    async Task Submit()
+    {
+        ProcessDeadline();
+        Form.Validate();
+        
+        if (Form.IsValid)
+        {
+            await TaskProxy.CreateAsync(Name, GroupId, DeadlineDate);
+            var error = TaskProxy.ErrorMessage;
+            if (error != String.Empty)
+            {
+                ErrorMessage = error;
+                return;
+            }
+        }
+        
+        await MudDialog.Close(DialogResult.Ok(true));
+    } 
     void Cancel() => MudDialog.Cancel();
 }

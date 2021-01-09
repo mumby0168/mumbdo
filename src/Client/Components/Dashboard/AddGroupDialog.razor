@@ -1,4 +1,4 @@
-@using Mumbdo.Shared.Dtos
+@inherits MudFormBase
 @inject IItemGroupManager ItemGroupManager
 
 
@@ -8,15 +8,15 @@
 <MudDialog DisableSidePadding="true">
     <DialogContent>
         <MudContainer Class="add-g-dialog-container">
-            <MudForm @ref="Form" bind-IsValid="@IsValid">
-                <MudTextField @bind-Value="@Name" T="string" Label="Name" Required="true" RequiredError="A name is required."/>
+            <MudForm @ref="Form" bind-IsValid="@IsFormValid">
+                <MudTextField Variant="Variant.Filled" @bind-Value="@Name" T="string" Label="Name" Required="true" RequiredError="A name is required."/>
                 <br/>
-                <MudTextField @bind-Value="@Description" Label="Description" T="string" Lines="2"/>
+                <MudTextField Variant="Variant.Filled" @bind-Value="@Description" Label="Description" T="string" Lines="2"/>
                 <br/>
             </MudForm>
             <ImagePicker @bind-ImageUri="@ImageUri"/>
             <br/>
-            <MudText Color="Color.Error">@ErrorText</MudText>
+            <MudText Color="Color.Error">@ErrorMessage</MudText>
         </MudContainer>
     </DialogContent>
     <DialogActions>
@@ -33,12 +33,6 @@
 
     string Description { get; set; }
 
-    bool IsValid;
-
-    string ErrorText;
-
-    MudForm Form;
-
     string ImageUri = PlaceHolder;
 
     const string PlaceHolder = "https://images.unsplash.com/photo-1500423079914-b65af272b8db?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8MXwxMzQ0NTA3fHxlbnwwfHx8&w=1000&q=80";
@@ -48,20 +42,14 @@
         Form.Validate();
         if (Form.IsValid)
         {
-            Console.WriteLine(Name);
-            Console.WriteLine(Description);
             var error = await ItemGroupManager.AddGroupAsync(new ItemGroupDto(Guid.NewGuid(), Name, Description, ImageUri, new List<TaskDto>()));
             if (error != string.Empty)
             {
-                ErrorText = error;
+                ErrorMessage = error;
                 return;
             }
 
             await MudDialog.Close(DialogResult.Ok(true));
-        }
-        else
-        {
-            Console.WriteLine("Form Invalid");
         }
     }
     void Cancel() => MudDialog.Cancel();

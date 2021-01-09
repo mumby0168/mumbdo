@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Mumbdo.Web.Interfaces.Proxies
 {
-    public interface ITaskProxy
+    public interface ITaskProxy : IProxyBase
     {
         Task CreateAsync(string name, Guid? groupId = null, DateTime? deadline = null);
     }

@@ -97,11 +97,21 @@
     DateTime? Min = DateTime.Now;
 
     IEnumerable<ItemGroupDto> Groups = new List<ItemGroupDto>();
+    
+    [Parameter]
+    public Guid? ChosenGroupId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         Groups = await GroupProxy.GetGroupsAsync();
         await base.OnInitializedAsync();
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (ChosenGroupId is not null)
+            GroupId = ChosenGroupId;
+        base.OnParametersSet();
     }
 
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }

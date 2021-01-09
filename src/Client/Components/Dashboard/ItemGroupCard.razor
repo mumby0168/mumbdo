@@ -1,5 +1,7 @@
-@using Mumbdo.Shared.Dtos
 @inject NavigationManager NavigationManager
+@inject IItemGroupManager ItemGroupManager
+@inject IDialogService DialogService
+
 @code {
 
     [Parameter]
@@ -9,6 +11,18 @@
 
     void ViewList() 
         => NavigationManager.NavigateTo($"/group-tasks/{ItemGroup.Id}");
+
+    private async Task ShowAddTaskDialog(Guid id)
+    {
+        var dialogParameters = new DialogParameters();
+        dialogParameters.Add("ChosenGroupId", id);
+        var dialog = DialogService.Show<AddTaskDialog>("Create Task", dialogParameters);
+        var res = await dialog.Result;
+        if (!res.Cancelled)
+        {
+            ItemGroup = await ItemGroupManager.GetAsync(ItemGroup.Id);
+        }
+    }
 }
 
 <MudItem xs="12" md="6" lg="4">
@@ -21,7 +35,7 @@
             <MudText Typo="Typo.body2">@ItemGroup.Description</MudText>
         </MudCardContent>
         <MudCardActions>
-            <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.AddTask">Add</MudButton>
+            <MudButton Variant="Variant.Filled" OnClick="() => ShowAddTaskDialog(ItemGroup.Id)" Color="Color.Secondary" StartIcon="@Icons.Material.AddTask">Add</MudButton>
             <div style="margin-right: 0.5rem"></div>  
             <MudBadge Content="@TaskCount" Color="Color.Secondary">
                 <MudButton OnClick="@ViewList" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.PlaylistAddCheck">View</MudButton>

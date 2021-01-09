@@ -1,0 +1,40 @@
+
+@code {
+
+    [Parameter]
+    public IEnumerable<TaskDto> Tasks { get; set; }
+
+}
+
+<MudGrid Spacing="2">
+    @foreach (var task in Tasks)
+    {
+        <MudItem xs="12" md="6" lg="4">
+            <MudCard Elevation="5">
+                <MudCardHeader>
+                    <CardHeaderAvatar>
+                        <MudAvatar Color="Color.Secondary"><MudIcon Icon="@Icons.Material.OfflinePin"></MudIcon></MudAvatar>
+                    </CardHeaderAvatar>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1">@task.Name</MudText>
+                        <MudText Typo="Typo.body2">@task.Created.ToString("dd/MM/yyyy")</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardActions>
+                    @if (task.IsComplete)
+                    {
+                        <MudButton StartIcon="@Icons.Material.Redo" Variant="Variant.Filled" Color="Color.Warning" Size="Size.Small">Revert</MudButton>
+                        <MudButton StartIcon="@Icons.Material.Delete" Variant="Variant.Filled" Color="Color.Error" Size="Size.Small">Delete</MudButton>
+                    }
+                    else
+                    {
+                        <MudButton StartIcon="@Icons.Material.Check" Variant="Variant.Filled" Color="Color.Success" Size="Size.Small">Complete</MudButton>
+                    }
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    }
+</MudGrid>
+
+
+

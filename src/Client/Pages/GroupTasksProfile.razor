@@ -18,37 +18,50 @@
     private string _id;
 
     Guid GroupId;
+
+    bool IsLoading;
     
     ItemGroupDto Group { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
+        IsLoading = true;
         Group = await ItemGroupManager.GetAsync(GroupId);
+        IsLoading = false;
         await  base.OnParametersSetAsync();
     }   
 
 }
-
-@if (Group is not null)
+@if (IsLoading)
 {
-    <MudCard Elevation="5">
-        <MudCardMedia Image="@Group.Image"></MudCardMedia>
-        <MudCardContent>
-            <MudText Typo="Typo.h2">@Group.Name</MudText>
-            <MudText Typo="Typo.body1">@Group.Description</MudText>
-        </MudCardContent>
-    </MudCard>
-
-    <br/>
-
-    <TaskListTable Tasks="@Group.Tasks"></TaskListTable>
+    <MudText>Loading ...</MudText>
 }
 else
 {
-    <MudText Color="Color.Error" Typo="Typo.h2">
-        An error has occured        
-    </MudText>
+    
+    @if (Group is not null)
+    {
+        <MudCard Elevation="5">
+            <MudCardMedia Image="@Group.Image"></MudCardMedia>
+            <MudCardContent>
+                <MudText Typo="Typo.h2">@Group.Name</MudText>
+                <MudText Typo="Typo.body1">@Group.Description</MudText>
+            </MudCardContent>
+        </MudCard>
+
+        <br/>
+
+        <TaskListTable Tasks="@Group.Tasks"></TaskListTable>
+    }
+    else
+    {
+        <MudText Color="Color.Error" Typo="Typo.h2">
+            An error has occured        
+        </MudText>
+     }         
 }
+
+
 
 
 

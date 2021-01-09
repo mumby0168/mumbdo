@@ -29,14 +29,14 @@
                     </MudCardHeader>
                     <MudCardContent>
                         <MudGrid>
-                            <MudItem xs="6">
-                                <div align="left">
-                                    <MudDatePicker @bind-Date="@DeadlineDate" MinDate="DateTime.Now" Label="Date" Rounded="true" Color="Color.Secondary"></MudDatePicker>
+                            <MudItem xs="12" md="6">
+                                <div align="center">
+                                    <MudDatePicker @bind-Date="@DeadlineDate" DateFormat="dd/MM/yyyy" MinDate="DateTime.Now" Label="Date" Rounded="true" PickerVariant="PickerVariant.Dialog" Color="Color.Secondary"></MudDatePicker>
                                 </div>
                             </MudItem>
-                            <MudItem xs="6">
-                                <div align="right">
-                                    <MudTimePicker @bind-Time="@DeadlineTime" Label="Time"></MudTimePicker>
+                            <MudItem xs="12" md="6">
+                                <div align="center">
+                                    <MudTimePicker @bind-Time="@DeadlineTime" Label="Time" PickerVariant="PickerVariant.Dialog"></MudTimePicker>
                                 </div>
                             </MudItem>
                         </MudGrid>

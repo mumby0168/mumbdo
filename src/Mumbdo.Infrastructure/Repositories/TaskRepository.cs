@@ -26,7 +26,7 @@ namespace Mumbdo.Infrastructure.Repositories
         
         public async Task<IEnumerable<ITaskEntity>> GetUngroupedTasksForUserAsync(Guid userId, bool complete = false)
         {
-            var tasks = await _repository.FindAsync(t => t.UserId == userId && t.IsComplete == complete);
+            var tasks = await _repository.FindAsync(t => t.UserId == userId && t.IsComplete == complete && t.GroupId == null);
             return tasks.Select(t => t.AsDomain());
         }
 

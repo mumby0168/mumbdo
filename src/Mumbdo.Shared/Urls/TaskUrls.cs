@@ -9,5 +9,7 @@ namespace Mumbdo.Shared.Urls
         public const string UpdateTaskUrl = "/api/tasks";
 
         public static string DeleteTaskUrl(Guid id) => $"/api/tasks/{id}";
+
+        public static string UngroupedTasksUrl(bool completedTasks) => $"/api/tasks/ungrouped/{completedTasks}";
     }
 }

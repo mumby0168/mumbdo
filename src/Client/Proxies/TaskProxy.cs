@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mumbdo.Shared.Dtos;
 using Mumbdo.Shared.Urls;
@@ -43,6 +44,13 @@ namespace Mumbdo.Web.Proxies
             await AuthoriseAsync(_client, _authenticationService);
             var response = await _client.DeleteAsync(TaskUrls.DeleteTaskUrl(taskId));
             await _proxyHelper.ProcessResponseAsync(response, this);
+        }
+
+        public async Task<IEnumerable<TaskDto>> GetUngroupedTasksAsync(bool completedTasks = false)
+        {
+            await AuthoriseAsync(_client, _authenticationService);
+            var response = await _client.GetAsync<IEnumerable<TaskDto>>(TaskUrls.UngroupedTasksUrl(completedTasks));
+            return await _proxyHelper.ProcessResponseAsync(response, this);
         }
     }
 }

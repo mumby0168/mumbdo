@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Castle.Components.DictionaryAdapter;
 using Moq;
 using Moq.AutoMock;
 using Mumbdo.Shared.Dtos;
@@ -104,6 +106,31 @@ namespace Mumbdo.Web.Tests.Proxies
             VerifyAuthorisation();
             Mocker.GetMock<IProxyHelper>()
                 .Verify(o => o.ProcessResponseAsync(response.Object, sut));
+        }
+
+        [Test]
+        public async Task GetUngroupedTasksAsync_Always_GetsTasks()
+        {
+            //Arrange
+            var sut = CreateSut();
+            SetupAuthentication();
+            var tasks = new List<TaskDto>();
+
+            var response = new Mock<IHttpResponse<IEnumerable<TaskDto>>>();
+
+            Mocker.GetMock<IHttpClient>()
+                .Setup(o => o.GetAsync<IEnumerable<TaskDto>>(TaskUrls.UngroupedTasksUrl(false)))
+                .ReturnsAsync(response.Object);
+
+            Mocker.GetMock<IProxyHelper>()
+                .Setup(o => o.ProcessResponseAsync(response.Object, sut))
+                .ReturnsAsync(tasks);
+
+            //Act
+            var result = await sut.GetUngroupedTasksAsync(false);
+            
+            //Assert
+            result.ShouldBeEmpty();
         }
 
         private TaskProxy CreateSut() => Mocker.CreateInstance<TaskProxy>();

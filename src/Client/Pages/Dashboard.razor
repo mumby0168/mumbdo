@@ -2,6 +2,7 @@
 @inject IItemGroupManager ItemGroupManager;
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
+@inject ITaskProxy TaskProxy
 
 <AuthenticationView>
     <Authenticated>
@@ -14,17 +15,25 @@
                     </MudCardContent>
                 </MudCard>
             </MudItem>
+            @if (UngroupedTasks.Any())
+            {
+                <MudItem xs="12">
+                    <MudExpansionPanel Text="Ungrouped Tasks">
+                        <TasksList UpdateTasksAsync="UpdateUngroupedTasksAsync" Tasks="UngroupedTasks"></TasksList>
+                    </MudExpansionPanel>                
+                </MudItem>    
+            }
             @if (Groups != null)
             {
                 @foreach (var group in Groups)
                 {
-                    <ItemGroupCard ItemGroup="@group" />
-                }    
+                    <ItemGroupCard ItemGroup="@group"/>
+                }
             }
             else
             {
                 <MudItem xs="12">
-                    <MudText>No Groups</MudText>    
+                    <MudText>No Groups</MudText>
                 </MudItem>
             }
         </MudGrid>
@@ -41,12 +50,29 @@
 @code {
     IEnumerable<ItemGroupDto> Groups { get; set; }
 
+    List<TaskDto> UngroupedTasks { get; set; } = new();
+        
     protected override async Task OnInitializedAsync()
     {
         Groups = await ItemGroupManager.GetAllGroupsAsync();
+        var tasks = await TaskProxy.GetUngroupedTasksAsync();
+        UngroupedTasks = tasks.ToList();
         await base.OnInitializedAsync();
     }
 
+    private async Task UpdateUngroupedTasksAsync()
+    {
+        var tasks = await TaskProxy.GetUngroupedTasksAsync();
+        UngroupedTasks = tasks.ToList();
+        StateHasChanged();
+    }
+
+    private async Task UpdateAsync()
+    {
+        Groups = await ItemGroupManager.GetAllGroupsAsync();
+        await UpdateUngroupedTasksAsync();
+    }
+    
     private async Task ShowAddGroupDialog()
     {
         var dialog = DialogService.Show<AddGroupDialog>("Add Task Group");
@@ -55,7 +81,7 @@
         Console.WriteLine(res.Cancelled);
         if (!res.Cancelled)
         {
-            Groups = await ItemGroupManager.GetAllGroupsAsync();
+            await UpdateAsync();
         }
     }
 
@@ -65,7 +91,7 @@
         var res = await dialog.Result;
         if (!res.Cancelled)
         {
-            Groups = await ItemGroupManager.GetAllGroupsAsync();
+            await UpdateAsync();
         }
     }
     

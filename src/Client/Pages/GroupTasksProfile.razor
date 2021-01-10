@@ -29,7 +29,13 @@
         Group = await ItemGroupManager.GetAsync(GroupId);
         IsLoading = false;
         await  base.OnParametersSetAsync();
-    }   
+    }
+
+    private async Task UpdateAsync()
+    {
+        Group = await ItemGroupManager.GetAsync(GroupId);
+        StateHasChanged();
+    }
 
 }
 @if (IsLoading)
@@ -51,7 +57,7 @@ else
 
         <br/>
 
-        <TasksList Tasks="@Group.Tasks"></TasksList>
+        <TasksList UpdateTasksAsync="@UpdateAsync" Tasks="@Group.Tasks"></TasksList>
     }
     else
     {

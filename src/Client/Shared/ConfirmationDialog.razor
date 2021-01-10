@@ -1,0 +1,18 @@
+@code {
+
+    [CascadingParameter]
+    public MudDialogInstance MudDialog { get; set; }
+    
+    void Yes() => MudDialog.Close(DialogResult.Ok(true));
+    void No() => MudDialog.Cancel();
+}
+
+<MudDialog>
+    <DialogActions>
+        <MudButton OnClick="Yes" Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Material.Check">Yes</MudButton>
+        <MudButton OnClick="No" Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Clear">No</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+

@@ -29,5 +29,20 @@ namespace Mumbdo.Web.Proxies
                 new CreateTaskDto(name, groupId, deadline));
             await _proxyHelper.ProcessResponseAsync(response, this);
         }
+
+        public async Task<TaskDto> UpdateAsync(Guid id, string name, bool isComplete, Guid? groupId, DateTime? deadline)
+        {
+            await AuthoriseAsync(_client, _authenticationService);
+            var response = await _client.PutAsync<UpdateTaskDto, TaskDto>(TaskUrls.UpdateTaskUrl,
+                new UpdateTaskDto(id, name, isComplete, groupId, deadline));
+            return await _proxyHelper.ProcessResponseAsync(response, this);
+        }
+
+        public async Task DeleteAsync(Guid taskId)
+        {
+            await AuthoriseAsync(_client, _authenticationService);
+            var response = await _client.DeleteAsync(TaskUrls.DeleteTaskUrl(taskId));
+            await _proxyHelper.ProcessResponseAsync(response, this);
+        }
     }
 }

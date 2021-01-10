@@ -47,6 +47,7 @@ namespace Mumbdo.Web
             builder.Services.AddScoped<IAuthenticationProxy, AuthenticationProxy>();
             builder.Services.AddScoped<IGroupProxy, GroupProxy>();
             builder.Services.AddScoped<ITaskProxy, TaskProxy>();
+            builder.Services.AddScoped<IConfirmationService, ConfirmationService>();
 
 
             var host =  builder.Build();

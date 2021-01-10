@@ -1,8 +1,42 @@
 
+@inject IConfirmationService ConfirmationService
+@inject ITaskProxy TaskProxy
+
+
 @code {
 
     [Parameter]
-    public IEnumerable<TaskDto> Tasks { get; set; }
+    public List<TaskDto> Tasks { get; set; }
+    
+    [Parameter]
+    public Func<Task> UpdateTasksAsync { get; set; }
+
+    private async Task OnCompleteAsync(Guid id)
+    {
+        var accepted = await ConfirmationService.ConfirmAsync("Are you sure you want to complete this task");
+        if (accepted)
+        {
+            await CompleteAsync(id);
+        }
+    }
+    
+
+    private async Task CompleteAsync(Guid id)
+    {
+        var task = Tasks.FirstOrDefault(t => t.Id == id);
+        
+        if(task is null)
+            return;
+        
+        await TaskProxy.UpdateAsync(task.Id, task.Name, true, task.GroupId, task.Deadline);
+        var error = TaskProxy.ErrorMessage;
+        if (error != string.Empty)
+        {
+            Console.WriteLine($@"Error: {error}");
+            return;
+        }
+        await UpdateTasksAsync();
+    }
 
 }
 
@@ -28,7 +62,7 @@
                     }
                     else
                     {
-                        <MudButton StartIcon="@Icons.Material.Check" Variant="Variant.Filled" Color="Color.Success" Size="Size.Small">Complete</MudButton>
+                        <MudButton OnClick="() => OnCompleteAsync(task.Id)" StartIcon="@Icons.Material.Check" Variant="Variant.Filled" Color="Color.Success" Size="Size.Small">Complete</MudButton>
                     }
                 </MudCardActions>
             </MudCard>

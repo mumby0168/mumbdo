@@ -26,6 +26,7 @@ namespace Mumbdo.Application.Tests.Services
         public void Setup()
         {
             _mocker = new AutoMocker();
+            DtoExtensions.Reset();
         }
 
         [Test]
@@ -215,10 +216,6 @@ namespace Mumbdo.Application.Tests.Services
             _mocker.GetMock<ITaskRepository>()
                 .Verify(o => o.DeleteAsync(id));
         }
-        
-        
-        
-        
 
         private ITaskService CreateSut() => _mocker.CreateInstance<TaskService>();
     }

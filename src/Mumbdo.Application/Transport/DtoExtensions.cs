@@ -10,6 +10,8 @@ namespace Mumbdo.Application.Transport
         public static void SetMockedImplementation(ITransferDataService implementation) =>
             _implementation = implementation;
 
+        public static void Reset() => _implementation = new TransferDataService();
+
         public static TaskDto AsTaskDto(this ITaskEntity task) => _implementation.AsTaskDto(task);
 
 

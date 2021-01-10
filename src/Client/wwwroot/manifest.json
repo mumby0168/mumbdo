@@ -1,0 +1,15 @@
+{
+  "name": "Mumbdo",
+  "short_name": "Mumbdo",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#03173d",
+  "icons": [
+    {
+      "src": "ico.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}

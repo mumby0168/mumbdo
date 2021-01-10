@@ -13,11 +13,9 @@ namespace Mumbdo.Infrastructure.Repositories
     {
         private readonly IMongoRepository<TaskDocument, Guid> _repository;
 
-        public TaskRepository(IMongoRepository<TaskDocument, Guid> repository)
-        {
-            _repository = repository;
-        }
-        
+        public TaskRepository(IMongoRepository<TaskDocument, Guid> repository) 
+            => _repository = repository;
+
         public async Task<IEnumerable<ITaskEntity>> GetTasksInGroupAsync(Guid groupId, bool complete = false)
         {
             var results = await _repository.FindAsync(t => t.GroupId == groupId && t.IsComplete == complete);
@@ -31,6 +29,17 @@ namespace Mumbdo.Infrastructure.Repositories
             var tasks = await _repository.FindAsync(t => t.UserId == userId && t.IsComplete == complete);
             return tasks.Select(t => t.AsDomain());
         }
+
+        public async Task<ITaskEntity> GetAsync(Guid id, Guid userId)
+        {
+            var task = await _repository.GetAsync(d => d.Id == id && d.UserId == userId);
+            return task?.AsDomain();
+        }
+
+        public Task UpdateAsync(ITaskEntity task) 
+            => _repository.UpdateAsync(task.AsDocument());
+
+        public Task DeleteAsync(Guid id) => _repository.DeleteAsync(id);
     }
 
     public static class TaskEntityExtensions

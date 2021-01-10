@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +24,20 @@ namespace Mumbdo.Api.Controllers
         {
             var task = await _taskService.CreateAsync(dto);
             return Ok(task);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Update([FromBody] UpdateTaskDto dto)
+        {
+            var task = await _taskService.UpdateAsync(dto);
+            return Ok(task);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            await _taskService.DeleteAsync(id);
+            return Ok();
         }
 
         [HttpGet("ungrouped/{complete}")]

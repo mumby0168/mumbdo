@@ -7,7 +7,7 @@
 }
 
 <MudGrid Spacing="2">
-    @foreach (var task in Tasks)
+    @foreach (var task in Tasks.OrderBy(t => t.Created))
     {
         <MudItem xs="12" md="6" lg="4">
             <MudCard Elevation="5">

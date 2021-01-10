@@ -1,6 +1,9 @@
+using System.Reflection.Metadata.Ecma335;
 using Microsoft.Extensions.DependencyInjection;
 using Mumbdo.Application.Jwt;
 using Mumbdo.Application.Services;
+using Mumbdo.Domain.Entities;
+using Mumbdo.Shared.Dtos;
 
 namespace Mumbdo.Application
 {
@@ -16,6 +19,5 @@ namespace Mumbdo.Application
             services.AddSingleton<ITaskService, TaskService>();
             return services;
         }
-        
     }
 }  

@@ -16,5 +16,7 @@ namespace Mumbdo.Domain.Entities
         
         Guid? GroupId { get; }
         string Name { get;  }
+
+        void Update(string name, bool isComplete, Guid? groupId, DateTime? deadline);
     }
 }

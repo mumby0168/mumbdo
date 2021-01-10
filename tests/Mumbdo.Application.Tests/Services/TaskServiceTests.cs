@@ -1,4 +1,5 @@
 using System;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using Moq;
@@ -7,6 +8,7 @@ using Mumbdo.Application.Exceptions;
 using Mumbdo.Application.Interfaces.Repositories;
 using Mumbdo.Application.Interfaces.Utilities;
 using Mumbdo.Application.Services;
+using Mumbdo.Application.Transport;
 using Mumbdo.Domain.Aggregates;
 using Mumbdo.Domain.Entities;
 using Mumbdo.Shared.Dtos;
@@ -135,9 +137,86 @@ namespace Mumbdo.Application.Tests.Services
             taskDto.Deadline.ShouldBe(task.Object.Deadline);
             taskDto.GroupId.ShouldBeNull();
             taskDto.IsComplete.ShouldBe(task.Object.IsComplete);
-
-
         }
+
+        [Test]
+        public async Task UpdateAsync_ValidTaskToUpdate_Updates()
+        {
+            //Arrange
+            Tools.SetupCurrentUserService(_mocker);
+            var sut = CreateSut();
+            var update = new UpdateTaskDto(Guid.NewGuid(), "update", true, Guid.NewGuid(), null);
+            var transferServiceExtensions = Tools.SetupTransferServiceExtensions();
+
+            var task = new Mock<ITaskEntity>();
+            
+            
+
+            transferServiceExtensions.Setup(o => o.AsTaskDto(task.Object))
+                .Returns(Tools.DefaultTaskDto);
+
+            _mocker.GetMock<ITaskRepository>()
+                .Setup(o => o.GetAsync(update.Id, Tools.User.Id))
+                .ReturnsAsync(task.Object);
+
+            //Act
+            var result = await sut.UpdateAsync(update);
+
+            //Assert
+            result.ShouldNotBeNull();
+            transferServiceExtensions.Verify(o => o.AsTaskDto(task.Object));
+            task.Verify(o => o.Update(update.Name, update.IsComplete, update.GroupId, update.Deadline));
+            _mocker.GetMock<ITaskRepository>()
+                .Verify(o => o.UpdateAsync(task.Object));
+        }
+
+        [Test]
+        public void UpdateAsync_BadId_Throws()
+        {
+            //Arrange
+            var sut = CreateSut();
+            Tools.SetupCurrentUserService(_mocker);
+
+            //Act
+            //Assert
+            Assert.ThrowsAsync<TaskIdInvalidException>(() =>
+                sut.UpdateAsync(new UpdateTaskDto(Guid.NewGuid(), "", true, Guid.NewGuid(), null)));
+        }
+        
+        [Test]
+        public void DeleteAsync_BadId_Throws()
+        {
+            //Arrange
+            var sut = CreateSut();
+            Tools.SetupCurrentUserService(_mocker);
+
+            //Act
+            //Assert
+            Assert.ThrowsAsync<TaskIdInvalidException>(() =>
+                sut.DeleteAsync(Guid.NewGuid()));
+        }
+        
+        [Test]
+        public async Task DeleteAsync_ValidId_DeletesTask()
+        {
+            //Arrange
+            var sut = CreateSut();
+            var id = Guid.NewGuid();
+            Tools.SetupCurrentUserService(_mocker);
+            var task = new Mock<ITaskEntity>();
+            _mocker.GetMock<ITaskRepository>()
+                .Setup(o => o.GetAsync(id, Tools.User.Id))
+                .ReturnsAsync(task.Object);
+
+            //Act
+            await sut.DeleteAsync(id);
+
+            //Assert
+            _mocker.GetMock<ITaskRepository>()
+                .Verify(o => o.DeleteAsync(id));
+        }
+        
+        
         
         
 
